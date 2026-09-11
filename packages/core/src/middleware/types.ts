@@ -1,9 +1,17 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import type { Ctx } from "../ctx/types.js";
-import type { UnionToIntersection } from "../types.js";
+import type { ResponseDescriptor } from "../response/types.js";
+import type { MaybePromise, UnionToIntersection } from "../types.js";
 
 /** Continues to the next middleware or the handler. */
 export type Next = () => Promise<void>;
+
+/**
+ * A middleware either calls `next()`, responds through `ctx.res`, throws, or
+ * returns a response descriptor without calling `next()`.
+ */
+// biome-ignore lint/suspicious/noConfusingVoidType: void is the common case; a descriptor is the short-circuit
+export type MiddlewareResult = MaybePromise<void | ResponseDescriptor>;
 
 declare const ADDS: unique symbol;
 
@@ -14,7 +22,7 @@ declare const ADDS: unique symbol;
 export type CtxMiddleware<C = Ctx, Adds extends object = {}> = ((
   ctx: C & Partial<Adds>,
   next: Next,
-) => Promise<void> | void) & { readonly [ADDS]?: Adds };
+) => MiddlewareResult) & { readonly [ADDS]?: Adds };
 
 /**
  * A `(ctx, next)` middleware. `Adds` declares what it puts on `ctx`; every
@@ -53,4 +61,4 @@ export type AddsOfAll<M extends readonly unknown[]> =
     : {};
 
 /** Shape a `(ctx, next)` function must have to be used where the context is `C`. */
-export type CtxMiddlewareFor<C> = (ctx: C, next: Next) => Promise<void> | void;
+export type CtxMiddlewareFor<C> = (ctx: C, next: Next) => MiddlewareResult;

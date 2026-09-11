@@ -177,9 +177,13 @@ export interface RouteInfo {
   readonly params: readonly string[];
   readonly schemas: RouteSchemas;
   readonly uploads: UploadFieldsSpec | undefined;
-  /** Middleware chain, outer to inner: router, group, then route level. */
+  /** Full middleware chain, outer to inner: router, group, then route level. */
   readonly middleware: readonly AnyMiddleware[];
+  /** The route-level portion of `middleware` (runs after validation). */
+  readonly routeMiddleware: readonly AnyMiddleware[];
   readonly handler: Handler<RouteState>;
+  /** The `.response(schema)` used to validate return values outside production. */
+  readonly response: StandardSchemaV1 | undefined;
   readonly summary: string | undefined;
   readonly tags: readonly string[];
   readonly responses: readonly RouteResponse[];
@@ -220,5 +224,34 @@ export interface RouterHooks {
   readonly onResponse: readonly ResponseHook[];
   readonly onError: readonly ErrorHook[];
 }
+
+export interface RouterOptions {
+  /** Validate handler return values against `.response(schema)` outside production. Default `true`. */
+  validateResponses?: boolean;
+}
+
+/** @internal A route with its chain split as the compiler needs it. */
+export interface CompiledRoute {
+  readonly info: RouteInfo;
+  /** Router and group middleware, outer to inner. */
+  readonly inherited: readonly AnyMiddleware[];
+  readonly hooks: RouterHooks;
+}
+
+/** @internal */
+export interface CompiledStatic extends StaticInfo {
+  readonly hooks: RouterHooks;
+}
+
+/** @internal */
+export interface CompiledRedirect extends RedirectInfo {
+  readonly hooks: RouterHooks;
+}
+
+/** @internal Registration-ordered items the compiler walks. */
+export type Entry =
+  | { readonly kind: "route"; readonly route: CompiledRoute }
+  | { readonly kind: "static"; readonly static: CompiledStatic }
+  | { readonly kind: "redirect"; readonly redirect: CompiledRedirect };
 
 export type { ExpressMiddleware };

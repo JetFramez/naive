@@ -20,7 +20,7 @@ orders
   });
 ```
 
-This page covers the type layer. Runtime behaviour (validation, response conventions, Express compilation) is documented alongside milestone M1.
+The first half of this page is the type layer; the second half is what happens at runtime.
 
 ## Path params
 
@@ -127,6 +127,99 @@ router.get("/:id").params(schema).handle((ctx) => { audit(ctx); });
 ## Uploads
 
 `.uploads({...})` types `ctx.uploads` from the field spec: a single `UploadedFile`, an `UploadedFile[]` when `maxCount` is set, and `| undefined` when `optional: true`. The upload module supplies the runtime.
+
+## Runtime
+
+### Express is the transport
+
+A `Router` instance is Express middleware. On a bare Express app:
+
+```ts
+const app = express();
+app.use(express.json());
+app.use(orders);                    // full paths, including the router prefix
+app.use("/v2", orders.express());   // or mount the compiled express.Router yourself
+```
+
+Each route compiles to one Express handler that runs the whole chain: router and group middleware, validation, route middleware, then the handler. Routes registered after the first request are picked up automatically.
+
+Because middleware compiles per route, router-level middleware runs only for requests that match one of the router's routes, statics or redirects. Put `cors()`, `helmet()` and other "every request" middleware on the app, where Express runs them for unmatched paths and preflights too.
+
+### The chain
+
+Middleware runs in registration order, outer to inner, and unwinds after `await next()`. The router sends the response after the chain has fully unwound, so middleware can still set headers after `next()`:
+
+```ts
+router.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  ctx.set("x-elapsed", String(Date.now() - start));
+});
+```
+
+A middleware must do one of four things: call `next()`, throw, respond through `ctx.res`, or return a response descriptor without calling `next()`. Doing none of them raises `Internal("middleware ended without responding or calling next()")`.
+
+Errors are thrown, never passed to `next(err)`. The router catches them and forwards them to Express's error path, where the notio error handler (or your own) renders them.
+
+Express middleware in the chain keeps Express semantics: `next()` continues, `next(err)` becomes a thrown error, `next("route")` skips to the next matching route, and ending the response without calling `next()` stops the chain. A four-argument `(err, req, res, next)` handler sees errors thrown by anything after it in the chain.
+
+`guard()` covers one-line checks:
+
+```ts
+router.use(guard((ctx) => ctx.user.role === "admin", () => new Forbidden()));
+```
+
+### Validation
+
+Validation runs after router and group middleware and before route middleware, in the order params, query, headers, body. Only the first failing section is reported, as `Unprocessable` (422):
+
+```json
+{
+  "code": "VALIDATION",
+  "message": "Invalid body",
+  "details": {
+    "in": "body",
+    "issues": [{ "path": "items.1.qty", "code": "too_small", "message": "..." }]
+  },
+  "requestId": "..."
+}
+```
+
+- Path params and query values arrive as strings; use coercion in the schema (`z.coerce.number()`).
+- A single query value is promoted to a one-element array when the schema wants an array, so `?tags=a` and `?tags=a&tags=b` both validate against `z.array(z.string())`.
+- Unknown keys follow the schema's own policy. Zod and Valibot strip them by default; use `.strict()` to reject.
+- Header names are lower-case. After validation `ctx.headers.all()` returns the validated object; `ctx.headers.get()` always reads the raw request.
+- The body is whatever the body parser put on `req.body`. `createApp` installs JSON and urlencoded parsers; on bare Express, install `express.json()` yourself.
+
+`.response(schema)` validates the return value outside production (`NODE_ENV !== "production"`) and throws `Internal` on mismatch, so a wrong shape fails loudly in development and costs nothing in production. Disable it per router with `new Router(prefix, { validateResponses: false })`.
+
+### Responses
+
+| Handler returns | Response |
+|---|---|
+| `string` | `text/plain`, 200 |
+| object, array, number, boolean, `null` | JSON, 200 (201 for POST) |
+| `undefined` | 204, empty body |
+| `Buffer` or `Readable` | bytes or a stream, `application/octet-stream` unless a type was set |
+| a descriptor from `ctx.json()`, `ctx.text()`, `ctx.redirect()`, `ctx.file()`, `ctx.download()`, `ctx.stream()`, `ctx.empty()`, `ctx.raw()` | as described by the descriptor |
+| the handler already wrote to `ctx.res` | nothing; a warning is logged if a value was also returned |
+
+`ctx.status(code)` and `ctx.set(name, value)` apply to plain returns. A descriptor's own status and headers take precedence.
+
+### Statics and redirects
+
+```ts
+router.static("/assets", "./public", { maxAge: "1d", immutable: true });
+router.static("/app", "./dist", { spa: true });   // serves index.html for unmatched GETs that accept HTML
+router.redirect("/old", "/new");                  // 302
+router.redirect("/gone", "/elsewhere", 301);
+```
+
+Both inherit the router's prefix and middleware. `maxAge` accepts a duration string. Everything else is passed to `express.static`.
+
+### Hooks
+
+`router.onRequest(fn)`, `router.onResponse(fn)` and `router.onError(fn)` observe requests handled by the router and its groups and mounts. They cannot change the response. `onRequest` runs before the chain; `onResponse` runs after the response was sent, with the handler's return value; `onError` runs once with the thrown error before it is forwarded to Express, and the error is marked so app-level hooks do not run it again. Outer routers' hooks run before inner ones. A throwing `onRequest` hook fails the request; throwing `onResponse` or `onError` hooks are logged and ignored.
 
 ## Route metadata
 
