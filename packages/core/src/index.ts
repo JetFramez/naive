@@ -17,6 +17,14 @@ export type {
   TypedCtx,
 } from "./ctx/types.js";
 export {
+  classifyError,
+  defaultEnvelope,
+  type ErrorHandlerOptions,
+  errorHandler,
+  type MappedError,
+  notFound,
+} from "./errors/handler.js";
+export {
   BadRequest,
   Conflict,
   defineError,

@@ -1,7 +1,7 @@
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import express, { type Express } from "express";
-import { isHttpError } from "../../src/index.js";
+import { errorHandler, notFound } from "../../src/index.js";
 
 /** A fetch Response whose `json()` is untyped, for convenient assertions. */
 export type LooseResponse = Omit<Response, "json"> & { json(): Promise<any> };
@@ -13,20 +13,11 @@ export interface TestServer {
   close(): Promise<void>;
 }
 
-/** Renders any error as JSON so tests can assert on status and body. The real handler arrives with M2. */
-export const testErrorHandler: express.ErrorRequestHandler = (err, _req, res, _next) => {
-  if (isHttpError(err)) {
-    res.status(err.status).json({ code: err.code, message: err.message, details: err.details });
-    return;
-  }
-  const status = typeof err?.status === "number" ? err.status : 500;
-  res.status(status).json({ code: "INTERNAL", message: String(err?.message ?? err) });
-};
-
 export async function serve(setup: (app: Express) => void): Promise<TestServer> {
   const app = express();
   setup(app);
-  app.use(testErrorHandler);
+  app.use(notFound());
+  app.use(errorHandler({ expose: true }));
   const server: Server = createServer(app);
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address() as AddressInfo;

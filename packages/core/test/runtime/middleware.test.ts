@@ -89,6 +89,7 @@ describe("middleware chain", () => {
           code: "NOT_FOUND",
           message: "no such thing",
           details: { id: 1 },
+          requestId: expect.any(String),
         });
         expect((await fetch("/mw")).status).toBe(403);
         const plain = await fetch("/plain");
