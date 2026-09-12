@@ -15,6 +15,15 @@ export {
   type ShutdownOptions,
 } from "./app/create.js";
 export {
+  type Cache,
+  type CacheOptions,
+  type CacheScope,
+  createCache,
+  redisStore,
+  type SetOptions,
+  type TaggedCache,
+} from "./cache/cache.js";
+export {
   type Config,
   ConfigError,
   type ConfigIssue,
@@ -70,6 +79,19 @@ export {
   Unauthorized,
   Unprocessable,
 } from "./errors/http-error.js";
+export {
+  createEvents,
+  type ErrorListener,
+  type EventMap,
+  type EventMeta,
+  type EventSchemas,
+  type Events,
+  type EventsOptions,
+  type Listener,
+  type ListenerError,
+  type MatchingNames,
+  type PayloadOf,
+} from "./events/events.js";
 export {
   type AppHooks,
   type ContextOptions,

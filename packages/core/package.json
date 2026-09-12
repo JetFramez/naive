@@ -27,8 +27,12 @@
     "cookie": "catalog:",
     "dotenv": "catalog:",
     "express": "catalog:",
+    "keyv": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:"
+  },
+  "optionalDependencies": {
+    "@keyv/redis": "catalog:"
   },
   "devDependencies": {
     "@types/express": "catalog:",
