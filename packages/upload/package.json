@@ -1,0 +1,41 @@
+{
+  "name": "@notio-internal/upload",
+  "version": "0.0.0",
+  "private": true,
+  "description": "notio uploads: multipart parsing on busboy, magic-byte type detection, temp file lifecycle",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@notio-internal/core": "workspace:*",
+    "busboy": "catalog:",
+    "express": "catalog:",
+    "file-type": "catalog:"
+  },
+  "devDependencies": {
+    "@types/busboy": "catalog:",
+    "zod": "catalog:",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

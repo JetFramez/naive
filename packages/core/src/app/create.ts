@@ -239,7 +239,11 @@ export class App {
 
     for (const entry of this.#entries) {
       if (entry.kind === "use") ex.use(...entry.middleware.map(toExpress));
-      else ex.use(entry.router);
+      else {
+        // Force compilation now, so a route that needs a module (like .uploads()
+        // without the upload module installed) fails at listen(), not on the first request.
+        ex.use(entry.router.express());
+      }
     }
 
     ex.use(notFound());

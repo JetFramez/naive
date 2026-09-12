@@ -87,6 +87,8 @@ export class RequestContext implements Ctx {
   result: unknown = undefined;
   readonly startedAt: number = Date.now();
   requestLogArmed = false;
+  /** Installed by the upload module when the route declared `.uploads()`. */
+  uploads: Record<string, unknown> | undefined = undefined;
 
   #url: URL | undefined;
   #params: Record<string, unknown> | undefined;

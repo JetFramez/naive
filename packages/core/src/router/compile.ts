@@ -13,6 +13,7 @@ import type {
   Entry,
   RouterHooks,
 } from "./types.js";
+import { getUploadsParser, UPLOAD_MODULE_INSTALL_MESSAGE } from "./uploads-registry.js";
 import { validateRequest, validateResponse } from "./validate.js";
 
 export interface CompileOptions {
@@ -54,8 +55,26 @@ function shouldValidateResponses(options: CompileOptions): boolean {
 
 function routeHandler(route: CompiledRoute, options: CompileOptions): RequestHandler {
   const { info, hooks } = route;
+  if (info.uploads && !getUploadsParser()) {
+    throw new Error(`Route ${info.method} ${info.path} ${UPLOAD_MODULE_INSTALL_MESSAGE}`);
+  }
   const validation: Step = async (ctx, next) => {
-    await validateRequest(ctx, info.schemas);
+    // params, query, headers first: they never depend on the (possibly multipart) body.
+    await validateRequest(ctx, {
+      ...(info.schemas.params ? { params: info.schemas.params } : {}),
+      ...(info.schemas.query ? { query: info.schemas.query } : {}),
+      ...(info.schemas.headers ? { headers: info.schemas.headers } : {}),
+    });
+    if (info.uploads) {
+      const parser = getUploadsParser();
+      if (!parser)
+        throw new Error(`Route ${info.method} ${info.path} ${UPLOAD_MODULE_INSTALL_MESSAGE}`);
+      const parsed = await parser(ctx, info.uploads);
+      ctx.uploads = parsed.uploads;
+      ctx.body = parsed.body;
+    }
+    // body last: for multipart routes this validates the text fields the parser collected.
+    await validateRequest(ctx, info.schemas.body ? { body: info.schemas.body } : {});
     await next();
   };
   const terminal: Step = (ctx) => info.handler(ctx as never);

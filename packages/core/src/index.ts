@@ -178,6 +178,14 @@ export {
   type UploadsOf,
 } from "./router/uploads.js";
 export {
+  clearUploadsParser,
+  getUploadsParser,
+  type ParsedUploads,
+  setUploadsParser,
+  UPLOAD_MODULE_INSTALL_MESSAGE,
+  type UploadsParser,
+} from "./router/uploads-registry.js";
+export {
   runSchema,
   type SchemaOutcome,
   toIssues,
