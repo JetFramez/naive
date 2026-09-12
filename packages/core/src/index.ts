@@ -6,6 +6,15 @@ export {
   runWithCtx,
 } from "./als.js";
 export {
+  App,
+  type AppOptions,
+  type BodyOptions,
+  createApp,
+  type HealthOptions,
+  type LifecycleHook,
+  type ShutdownOptions,
+} from "./app/create.js";
+export {
   type Config,
   ConfigError,
   type ConfigIssue,
@@ -93,6 +102,7 @@ export type {
   MiddlewareResult,
   Next,
 } from "./middleware/types.js";
+export { toExpress } from "./middleware/wrap.js";
 export {
   type DownloadResponse,
   type EmptyResponse,
