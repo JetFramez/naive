@@ -1,14 +1,28 @@
 # Rate limiting
 
-`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out, hand it your Redis client and every decision becomes one atomic Lua script on the server.
+`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
 
-```ts
+::: code-group
+
+```ts [memory — one process]
 import { rateLimit } from "@jetframez/notio/rate-limit";
 
 router.use(rateLimit({ limit: 100, window: "1m" }));
 
 router.post("/login").use(rateLimit({ limit: 5, window: "15m", key: (ctx) => ctx.body?.email ?? ctx.ip }));
 ```
+
+```ts [Redis — several processes]
+import { rateLimit } from "@jetframez/notio/rate-limit";
+import Redis from "ioredis";
+
+const redis = new Redis(config.redis.url);
+
+app.use(rateLimit({ limit: 1000, window: "1m", store: redis, name: "global" }));
+router.post("/login").use(rateLimit({ limit: 5, window: "15m", store: redis, name: "login" }));
+```
+
+:::
 
 Every response the limiter sees carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset` (seconds until the limit resets). Once exceeded, it throws `TooManyRequests` (429) with `details: { limit, window, retryAfter }` and a `Retry-After` header.
 
@@ -37,18 +51,7 @@ Every response the limiter sees carries `RateLimit-Limit`, `RateLimit-Remaining`
 
 Both backends are race-free under concurrent requests to the same key. In memory, each decision is a synchronous read-modify-write with no `await` between the two, so nothing can interleave. On Redis, each decision is one Lua script run by `EVAL`, and Redis executes a script as a single indivisible command. Fixed and sliding increment first and decide from the returned total, so two concurrent requests can never observe the same count; the token bucket refills, spends and stores inside the script.
 
-The Redis scripts are exercised in the test suite against a Lua-executing mock, so they are covered without a Redis server in CI.
-
-## Redis
-
-```ts
-import Redis from "ioredis";
-
-const redis = new Redis(config.redis.url);
-
-app.use(rateLimit({ limit: 1000, window: "1m", store: redis, name: "global" }));
-router.post("/login").use(rateLimit({ limit: 5, window: "15m", store: redis, name: "login" }));
-```
+## Redis notes
 
 Pass the client you already have; there is no adapter layer. `name` keeps each limiter's keys separate on the shared client. If Redis is unreachable, `fallback` (on by default) keeps requests flowing against a per-process copy and logs a warning; set `fallback: false` to fail closed instead.
 

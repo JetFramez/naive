@@ -11,7 +11,7 @@ log.info({ orderId }, "order placed");
 log.error({ err }, "payment failed");
 ```
 
-`createApp({ logger })` builds the root logger. Scripts and tests that do not go through `createApp` call `configureLogger()` instead; `createLogger()` returns a standalone instance without touching the root.
+`createApp({ logger })` builds the root logger. Scripts and tests that do not go through `createApp` call `configureLogger()` instead; `createLogger()` returns a standalone instance without touching the root; `getRootLogger()` retrieves whichever of the two set it up. In tests, pass `destination` to a writable you control instead of asserting against stdout — see [Testing](/guide/guides/testing).
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -52,7 +52,7 @@ export function mustBeInRequest() {
 }
 ```
 
-`createApp` enters the store in its first middleware. On bare Express, `context()` does the same; a `Router` also enters it for its own chains, so handlers and route middleware always see it.
+`createApp` enters the store in its first middleware. On a bare Express app, [`context()`](/guide/getting-started/existing-express) does the same; a `Router` also enters it for its own chains, so handlers and route middleware always see it.
 
 ### Jobs and CLI
 
@@ -67,14 +67,3 @@ await runWithCtx({ kind: "job", state: { jobName: "nightly-sync" } }, async (ctx
 ```
 
 `currentCtx()` returns only HTTP contexts. `currentBaseCtx()` returns whatever context is active, HTTP or not; narrow with `kind`.
-
-## Bare Express
-
-```ts
-import { context, hooks } from "@jetframez/notio";
-
-app.use(context({ logger, cookieSecret }));   // ctx, ALS, request log line
-app.use(router);
-```
-
-`hooks(app, { onRequest, onResponse, onError })` installs the same middleware with hooks attached; see the hooks guide.

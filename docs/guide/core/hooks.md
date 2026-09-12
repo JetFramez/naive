@@ -28,17 +28,6 @@ App-level `onRequest` runs at the start of the request, before routing, so it fi
 
 A throwing `onRequest` hook fails the request: the error goes to the error handler like any other. Throwing `onResponse` and `onError` hooks are logged at `error` level and otherwise ignored, so an observer bug cannot break a response that was already sent.
 
-## Bare Express
+## On a bare Express app
 
-```ts
-import { hooks } from "@jetframez/notio";
-
-hooks(app, {
-  onRequest: [(ctx) => { /* ... */ }],
-  onResponse: (ctx, result) => { /* ... */ },
-  onError: (ctx, err) => { /* ... */ },
-});
-app.use(router);
-```
-
-`hooks()` installs the context middleware at that point, so call it before routes. Calling it more than once adds more hooks; each request still gets one context.
+`hooks(app, { onRequest, onResponse, onError })` installs the same context middleware `createApp` uses, plus these app-level hooks — call it once, before routes. See [Using notio in an existing Express app](/guide/getting-started/existing-express#hooks) for the full example. Calling it more than once adds more hooks; each request still gets one context.

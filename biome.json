@@ -31,7 +31,8 @@
               "**/*.test-d.ts",
               "**/*.config.ts",
               "**/notio/src/**",
-              "**/.vitepress/config.ts"
+              "**/.vitepress/config.ts",
+              "**/.vitepress/theme/**"
             ]
           }
         }
