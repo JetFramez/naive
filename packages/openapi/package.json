@@ -1,0 +1,45 @@
+{
+  "name": "@notio-internal/openapi",
+  "version": "0.0.0",
+  "private": true,
+  "description": "notio openapi: walks routes() into an OpenAPI 3.1 document, Standard Schema to JSON Schema, Scalar docs UI",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@notio-internal/core": "workspace:*",
+    "@scalar/express-api-reference": "catalog:",
+    "express": "catalog:"
+  },
+  "optionalDependencies": {
+    "@valibot/to-json-schema": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@notio-internal/auth": "workspace:*",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "arktype": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "valibot": "catalog:",
+    "vitest": "catalog:"
+  }
+}
