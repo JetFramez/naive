@@ -7,5 +7,11 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@notio-internal/core",
+    "@notio-internal/auth",
+    "@notio-internal/upload",
+    "@notio-internal/rate-limit",
+    "@notio-internal/openapi"
+  ]
 }

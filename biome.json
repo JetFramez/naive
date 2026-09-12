@@ -25,7 +25,14 @@
         "noUndeclaredDependencies": {
           "level": "error",
           "options": {
-            "devDependencies": ["**/test/**", "**/*.test.ts", "**/*.test-d.ts", "**/*.config.ts"]
+            "devDependencies": [
+              "**/test/**",
+              "**/*.test.ts",
+              "**/*.test-d.ts",
+              "**/*.config.ts",
+              "**/notio/src/**",
+              "**/.vitepress/config.ts"
+            ]
           }
         }
       },

@@ -3,6 +3,10 @@ packages:
   - examples/*
   - docs
 
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+
 catalog:
   typescript: ~5.9.3
   vitest: ^4.1.11
@@ -16,6 +20,10 @@ catalog:
   "@keyv/redis": ^5.1.6
   jose: ^6.2.12
   "@scalar/express-api-reference": ^0.10.18
+  drizzle-orm: ^0.45.2
+  drizzle-kit: ^0.31.10
+  better-sqlite3: ^13.0.3
+  "@types/better-sqlite3": ^9.6.0
   ioredis: ^5.11.1
   ioredis-mock: ^8.13.1
   "@types/ioredis-mock": ^8
@@ -29,6 +37,8 @@ catalog:
   valibot: ^1.5.0
   "@valibot/to-json-schema": ^1.8.0
   arktype: ^2.2.3
+  tsx: ^4.23.13
+  vitepress: ^1.6.4
 
 minimumReleaseAgeExclude:
   - zod@4.6.2

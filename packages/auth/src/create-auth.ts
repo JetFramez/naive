@@ -200,7 +200,11 @@ export function createAuth<User extends HasId>(config: CreateAuthConfig<User>): 
     // Hash a dummy password even on a miss, so the response time does not reveal whether the email exists.
     const ok = await hasher.verify(record?.passwordHash ?? (await hasher.hash("")), password);
     if (!record || !ok) throw new Unauthorized("Invalid email or password");
-    return record;
+    // Strip passwordHash: the adapter's record carries it, but the declared
+    // return type is User, and a naive `res.json(user)` would otherwise leak
+    // the hash to the client despite the type system saying it's not there.
+    const { passwordHash: _passwordHash, ...user } = record;
+    return user as unknown as User;
   }
 
   async function login(ctx: Ctx, user: User): Promise<void> {

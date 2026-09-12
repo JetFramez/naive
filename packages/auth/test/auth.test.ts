@@ -557,6 +557,10 @@ describe("hashPassword / verifyPassword", () => {
     adapter.addUser(makeUser({ passwordHash }));
     const user = await auth.verifyPassword("ada@example.com", "hunter2");
     expect(user.id).toBe("u1");
+    // Regression: the adapter record carries passwordHash, but it must never
+    // survive into the returned User, or a naive res.json(user) leaks it.
+    expect(user).not.toHaveProperty("passwordHash");
+    expect(JSON.stringify(user)).not.toContain("passwordHash");
     await expect(auth.verifyPassword("ada@example.com", "wrong")).rejects.toThrow(
       /Invalid email or password/,
     );

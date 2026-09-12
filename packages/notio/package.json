@@ -1,0 +1,79 @@
+{
+  "name": "@jetframez/notio",
+  "version": "0.1.0",
+  "description": "A TypeScript web framework on Express 5: a typed router, per-request context, unified errors, hooks, logging, config, and optional modules for auth, uploads, rate limiting, and OpenAPI.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "keywords": [
+    "express",
+    "framework",
+    "typescript",
+    "router",
+    "openapi"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "import": "./dist/auth.js"
+    },
+    "./upload": {
+      "types": "./dist/upload.d.ts",
+      "import": "./dist/upload.js"
+    },
+    "./rate-limit": {
+      "types": "./dist/rate-limit.d.ts",
+      "import": "./dist/rate-limit.js"
+    },
+    "./openapi": {
+      "types": "./dist/openapi.d.ts",
+      "import": "./dist/openapi.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "verify": "node scripts/verify-build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@scalar/express-api-reference": "catalog:",
+    "busboy": "catalog:",
+    "cookie": "catalog:",
+    "dotenv": "catalog:",
+    "express": "catalog:",
+    "file-type": "catalog:",
+    "jose": "catalog:",
+    "keyv": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:"
+  },
+  "optionalDependencies": {
+    "@keyv/redis": "catalog:",
+    "@node-rs/argon2": "catalog:"
+  },
+  "devDependencies": {
+    "@notio-internal/auth": "workspace:*",
+    "@notio-internal/core": "workspace:*",
+    "@notio-internal/openapi": "workspace:*",
+    "@notio-internal/rate-limit": "workspace:*",
+    "@notio-internal/upload": "workspace:*",
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zod": "catalog:"
+  }
+}

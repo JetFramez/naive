@@ -7,3 +7,11 @@ coverage
 .env
 .env.*
 !.env.example
+
+# docs site build
+docs/.vitepress/dist
+docs/.vitepress/cache
+
+# example app runtime data
+examples/**/*.sqlite
+examples/**/*.sqlite-*
