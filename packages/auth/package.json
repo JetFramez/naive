@@ -1,0 +1,41 @@
+{
+  "name": "@notio-internal/auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "notio auth: strategies, sessions, JWT, opaque tokens with rotation, password hashing",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@notio-internal/core": "workspace:*",
+    "jose": "catalog:"
+  },
+  "optionalDependencies": {
+    "@node-rs/argon2": "catalog:"
+  },
+  "devDependencies": {
+    "@types/express": "catalog:",
+    "@types/node": "catalog:",
+    "express": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
