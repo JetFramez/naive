@@ -35,7 +35,7 @@ describe("buildDocument", () => {
       .body(z.object({ total: z.number() }))
       .handle(() => "ok");
 
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const get = document.paths["/orders/{id}"]?.get as Record<string, unknown>;
     expect(get.summary).toBe("Fetch one order");
     expect(get.tags).toEqual(["orders"]);
@@ -66,7 +66,7 @@ describe("buildDocument", () => {
     router.get("/x").handle(() => "ok");
     router.post("/x").handle(() => "ok");
     router.delete("/x").handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     expect(Object.keys(document.paths)).toEqual(["/x"]);
     expect(Object.keys(document.paths["/x"] ?? {}).sort()).toEqual(["delete", "get", "post"]);
   });
@@ -78,7 +78,7 @@ describe("buildDocument", () => {
       .get("/secret")
       .hidden()
       .handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     expect(Object.keys(document.paths)).toEqual(["/visible"]);
   });
 
@@ -90,7 +90,7 @@ describe("buildDocument", () => {
       .response(Order)
       .handle(() => ({ id: "1" }));
 
-    const withoutWrap = await buildDocument(router.routes(), {
+    const withoutWrap = buildDocument(router.routes(), {
       info: { title: "t", version: "1" },
     });
     const opWithout = withoutWrap.paths["/x"]?.get as Record<string, unknown>;
@@ -99,7 +99,7 @@ describe("buildDocument", () => {
     });
     expect(withoutWrap.components.schemas.Order).toMatchObject({ title: "Order" });
 
-    const wrapped = await buildDocument(router.routes(), {
+    const wrapped = buildDocument(router.routes(), {
       info: { title: "t", version: "1" },
       wrapResponse: (schema) => ({
         type: "object",
@@ -123,7 +123,7 @@ describe("buildDocument", () => {
       .post("/x")
       .response(z.object({ id: z.string() }))
       .handle(() => ({ id: "1" }));
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const op = document.paths["/x"]?.post as Record<string, unknown>;
     expect(Object.keys(op.responses as object)).toEqual(["201"]);
   });
@@ -135,7 +135,7 @@ describe("buildDocument", () => {
       .errors(NotFound, Forbidden)
       .response(404, z.object({ custom: z.boolean() }))
       .handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const op = document.paths["/x"]?.get as Record<string, unknown>;
     const responses = op.responses as Record<string, { description: string; content: unknown }>;
     // .errors() would default 404 to "NOT_FOUND", but the explicit .response(404, ...) wins.
@@ -165,7 +165,7 @@ describe("buildDocument", () => {
       .query(z.object({ q: z.string() }))
       .handle(() => "ok");
     router.get("/plain").handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const validatedOp = document.paths["/validated"]?.get as Record<string, unknown> | undefined;
     const plainOp = document.paths["/plain"]?.get as Record<string, unknown> | undefined;
     expect(Object.keys((validatedOp?.responses ?? {}) as object)).toContain("422");
@@ -175,7 +175,7 @@ describe("buildDocument", () => {
   it("falls back to a bare 200 when a route declares nothing documentable", async () => {
     const router = new Router();
     router.get("/x").handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const op = document.paths["/x"]?.get as Record<string, unknown>;
     expect(op.responses).toEqual({ "200": { description: "Success" } });
   });
@@ -187,7 +187,7 @@ describe("buildDocument", () => {
       .body(z.object({ caption: z.string() }))
       .uploads({ avatar: { types: ["image/png"] } })
       .handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const op = document.paths["/x"]?.post as Record<string, unknown>;
     expect(op.requestBody).toMatchObject({
       required: true,
@@ -227,7 +227,7 @@ describe("buildDocument", () => {
       .handle(() => "ok");
     router.get("/public").handle(() => "ok");
 
-    const document = await buildDocument(router.routes(), {
+    const document = buildDocument(router.routes(), {
       info: { title: "t", version: "1" },
       security: { session: { type: "apiKey", in: "cookie", name: "sid" } },
     });
@@ -258,7 +258,7 @@ describe("buildDocument", () => {
         await next();
       })
       .handle(() => "ok");
-    const document = await buildDocument(router.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(router.routes(), { info: { title: "t", version: "1" } });
     const op = document.paths["/x"]?.get as Record<string, unknown>;
     expect(op.security).toBeUndefined();
   });
@@ -268,7 +268,7 @@ describe("buildDocument", () => {
     const users = new Router("/users");
     users.get("/:id").handle(() => "ok");
     app.mount("/api", users);
-    const document = await buildDocument(app.routes(), { info: { title: "t", version: "1" } });
+    const document = buildDocument(app.routes(), { info: { title: "t", version: "1" } });
     expect(Object.keys(document.paths)).toEqual(["/api/users/{id}"]);
   });
 
@@ -278,7 +278,7 @@ describe("buildDocument", () => {
       .get("/old")
       .deprecated()
       .handle(() => "ok");
-    const document = await buildDocument(router.routes(), {
+    const document = buildDocument(router.routes(), {
       info: { title: "My API", version: "2.0.0" },
       servers: [{ url: "https://api.example.com" }],
     });

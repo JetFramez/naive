@@ -11,7 +11,7 @@ describe("openapi().from()", () => {
     const users = new Router("/users");
     users.get("/:id").handle(() => "ok");
 
-    const spec = await openapi({ info: { title: "t", version: "1" } }).from(orders, users);
+    const spec = openapi({ info: { title: "t", version: "1" } }).from(orders, users);
     expect(Object.keys(spec.document.paths).sort()).toEqual(["/orders/{id}", "/users/{id}"]);
   });
 
@@ -21,7 +21,7 @@ describe("openapi().from()", () => {
       .get("/x")
       .response(z.object({ ok: z.boolean() }))
       .handle(() => ({ ok: true }));
-    const spec = await openapi({ info: { title: "Demo", version: "1.0.0" } }).from(router);
+    const spec = openapi({ info: { title: "Demo", version: "1.0.0" } }).from(router);
 
     await withApp(
       (app) => {
@@ -46,7 +46,7 @@ describe("openapi().from()", () => {
   it("serves the JSON route before the UI catch-all, so it is never swallowed", async () => {
     const router = new Router();
     router.get("/x").handle(() => "ok");
-    const spec = await openapi({ info: { title: "t", version: "1" } }).from(router);
+    const spec = openapi({ info: { title: "t", version: "1" } }).from(router);
     await withApp(
       (app) => app.use(spec.docs("/reference")),
       async ({ fetch }) => {

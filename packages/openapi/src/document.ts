@@ -58,11 +58,11 @@ function operationId(method: string, path: string): string {
   return method.toLowerCase() + parts.join("");
 }
 
-async function paramsFor(
+function paramsFor(
   names: readonly string[],
   location: "path" | "query" | "header",
   schema: JsonSchema | undefined,
-): Promise<Record<string, unknown>[]> {
+): Record<string, unknown>[] {
   if (names.length === 0) return [];
   const properties = (schema?.properties as Record<string, JsonSchema> | undefined) ?? {};
   const required = new Set(
@@ -76,18 +76,16 @@ async function paramsFor(
   }));
 }
 
-async function buildResponses(
+function buildResponses(
   route: RouteInfo,
   registry: ComponentRegistry,
   options: OpenApiOptions,
   secured: boolean,
-): Promise<Record<string, unknown>> {
+): Record<string, unknown> {
   const responses: Record<string, unknown> = {};
 
   for (const entry of route.responses) {
-    const converted = registry.register(
-      await convertSchema(entry.schema, options.schemaConverters),
-    );
+    const converted = registry.register(convertSchema(entry.schema, options.schemaConverters));
     const schema = options.wrapResponse ? options.wrapResponse(converted) : converted;
     responses[String(entry.status)] = {
       description: (schema.title as string | undefined) ?? "Success",
@@ -134,32 +132,30 @@ async function buildResponses(
   return responses;
 }
 
-async function buildRequestBody(
+function buildRequestBody(
   route: RouteInfo,
   registry: ComponentRegistry,
   options: OpenApiOptions,
-): Promise<unknown> {
+): unknown {
   if (route.uploads) {
     const bodySchema = route.schemas.body
-      ? registry.register(await convertSchema(route.schemas.body, options.schemaConverters))
+      ? registry.register(convertSchema(route.schemas.body, options.schemaConverters))
       : undefined;
     const schema = uploadsRequestSchema(route.uploads, bodySchema);
     return { required: true, content: { "multipart/form-data": { schema } } };
   }
   if (route.schemas.body) {
-    const schema = registry.register(
-      await convertSchema(route.schemas.body, options.schemaConverters),
-    );
+    const schema = registry.register(convertSchema(route.schemas.body, options.schemaConverters));
     return { required: true, content: { "application/json": { schema } } };
   }
   return undefined;
 }
 
 /** Walks `routes` into an OpenAPI 3.1 document. Routes marked `.hidden()` are skipped. */
-export async function buildDocument(
+export function buildDocument(
   routes: readonly RouteInfo[],
   options: OpenApiOptions,
-): Promise<OpenApiDocument> {
+): OpenApiDocument {
   const registry = new ComponentRegistry();
   const paths: Record<string, Record<string, unknown>> = {};
 
@@ -167,30 +163,28 @@ export async function buildDocument(
     if (route.hidden) continue;
     const openApiPath = toOpenApiPath(route.path);
 
-    const [paramsSchema, querySchema, headersSchema] = await Promise.all([
-      route.schemas.params
-        ? registry.register(await convertSchema(route.schemas.params, options.schemaConverters))
-        : undefined,
-      route.schemas.query
-        ? registry.register(await convertSchema(route.schemas.query, options.schemaConverters))
-        : undefined,
-      route.schemas.headers
-        ? registry.register(await convertSchema(route.schemas.headers, options.schemaConverters))
-        : undefined,
-    ]);
+    const paramsSchema = route.schemas.params
+      ? registry.register(convertSchema(route.schemas.params, options.schemaConverters))
+      : undefined;
+    const querySchema = route.schemas.query
+      ? registry.register(convertSchema(route.schemas.query, options.schemaConverters))
+      : undefined;
+    const headersSchema = route.schemas.headers
+      ? registry.register(convertSchema(route.schemas.headers, options.schemaConverters))
+      : undefined;
 
     const parameters = [
-      ...(await paramsFor(route.params, "path", paramsSchema)),
-      ...(await paramsFor(
+      ...paramsFor(route.params, "path", paramsSchema),
+      ...paramsFor(
         querySchema ? Object.keys((querySchema.properties as object) ?? {}) : [],
         "query",
         querySchema,
-      )),
-      ...(await paramsFor(
+      ),
+      ...paramsFor(
         headersSchema ? Object.keys((headersSchema.properties as object) ?? {}) : [],
         "header",
         headersSchema,
-      )),
+      ),
     ];
 
     const requirement = route.middleware.map(getAuthRequirement).find((r) => r !== undefined);
@@ -208,9 +202,9 @@ export async function buildDocument(
       ...(route.deprecated ? { deprecated: true } : {}),
       ...(parameters.length > 0 ? { parameters } : {}),
       ...(securityEntries.length > 0 ? { security: securityEntries } : {}),
-      responses: await buildResponses(route, registry, options, secured),
+      responses: buildResponses(route, registry, options, secured),
     };
-    const requestBody = await buildRequestBody(route, registry, options);
+    const requestBody = buildRequestBody(route, registry, options);
     if (requestBody) operation.requestBody = requestBody;
 
     paths[openApiPath] ??= {};

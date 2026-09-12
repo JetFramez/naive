@@ -15,20 +15,16 @@ export interface OpenApiSpec {
 }
 
 export interface OpenApiBuilder {
-  /**
-   * Walks every route across the given sources (an `App`, one or more
-   * `Router`s, or a mix) into the document. Async: schema conversion lazily
-   * imports the relevant library (Zod, Valibot, ArkType).
-   */
-  from(...sources: readonly RouteSource[]): Promise<OpenApiSpec>;
+  /** Walks every route across the given sources (an `App`, one or more `Router`s, or a mix) into the document. */
+  from(...sources: readonly RouteSource[]): OpenApiSpec;
 }
 
 /** Builds an OpenAPI 3.1 document from notio's route metadata. No code generation. */
 export function openapi(options: OpenApiOptions): OpenApiBuilder {
   return {
-    async from(...sources) {
+    from(...sources) {
       const routes = sources.flatMap((source) => source.routes());
-      const document = await buildDocument(routes, options);
+      const document = buildDocument(routes, options);
       return {
         document,
         docs: (path) => createDocsRouter(path, document),

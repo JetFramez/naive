@@ -6,8 +6,8 @@ import { convertSchema } from "../src/schema/convert.js";
 import { fakeSchema } from "./helpers/schema.js";
 
 describe("convertSchema", () => {
-  it("converts a Zod schema, hoisting nothing when unnamed", async () => {
-    const schema = await convertSchema(z.object({ id: z.string(), qty: z.number() }));
+  it("converts a Zod schema, hoisting nothing when unnamed", () => {
+    const schema = convertSchema(z.object({ id: z.string(), qty: z.number() }));
     expect(schema).toMatchObject({
       type: "object",
       properties: { id: { type: "string" }, qty: { type: "number" } },
@@ -16,44 +16,44 @@ describe("convertSchema", () => {
     expect(schema.$defs).toBeUndefined();
   });
 
-  it("converts a named Zod schema into a $ref plus $defs", async () => {
+  it("converts a named Zod schema into a $ref plus $defs", () => {
     const Order = z.object({ id: z.string() }).meta({ id: "Order", title: "Order" });
-    const schema = await convertSchema(Order);
+    const schema = convertSchema(Order);
     expect(schema.$ref).toBe("#/$defs/Order");
     expect(schema.$defs).toMatchObject({ Order: { title: "Order", type: "object" } });
   });
 
-  it("converts a Valibot schema", async () => {
-    const schema = await convertSchema(v.object({ name: v.string() }));
+  it("converts a Valibot schema", () => {
+    const schema = convertSchema(v.object({ name: v.string() }));
     expect(schema).toMatchObject({ type: "object", properties: { name: { type: "string" } } });
   });
 
-  it("converts a titled Valibot schema, carrying the title through", async () => {
+  it("converts a titled Valibot schema, carrying the title through", () => {
     const Named = v.pipe(v.object({ name: v.string() }), v.title("Widget"));
-    const schema = await convertSchema(Named);
+    const schema = convertSchema(Named);
     expect(schema.title).toBe("Widget");
   });
 
-  it("converts an ArkType schema via its native toJsonSchema()", async () => {
-    const schema = await convertSchema(type({ name: "string" }));
+  it("converts an ArkType schema via its native toJsonSchema()", () => {
+    const schema = convertSchema(type({ name: "string" }));
     expect(schema).toMatchObject({ type: "object", properties: { name: { type: "string" } } });
   });
 
-  it("converts a titled ArkType schema", async () => {
+  it("converts a titled ArkType schema", () => {
     const Named = type({ name: "string" }).configure({ title: "Widget" });
-    const schema = await convertSchema(Named);
+    const schema = convertSchema(Named);
     expect(schema.title).toBe("Widget");
   });
 
-  it("throws a clear error for an unrecognised vendor, naming a fix", async () => {
-    await expect(convertSchema(fakeSchema("acme-schema"))).rejects.toThrow(
+  it("throws a clear error for an unrecognised vendor, naming a fix", () => {
+    expect(() => convertSchema(fakeSchema("acme-schema"))).toThrow(
       /no JSON Schema converter for "acme-schema"/,
     );
   });
 
-  it("accepts a custom converter for an unrecognised vendor", async () => {
-    const schema = await convertSchema(fakeSchema("acme-schema"), {
-      "acme-schema": async () => ({ type: "string", title: "Acme" }),
+  it("accepts a custom converter for an unrecognised vendor", () => {
+    const schema = convertSchema(fakeSchema("acme-schema"), {
+      "acme-schema": () => ({ type: "string", title: "Acme" }),
     });
     expect(schema).toEqual({ type: "string", title: "Acme" });
   });

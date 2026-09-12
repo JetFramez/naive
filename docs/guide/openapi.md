@@ -5,7 +5,7 @@
 ```ts
 import { openapi } from "@jetframez/notio/openapi";
 
-const spec = await openapi({
+const spec = openapi({
   info: { title: "Shop API", version: "1.0.0" },
   servers: [{ url: "https://api.example.com" }],
   security: { session: { type: "apiKey", in: "cookie", name: "sid" } },
@@ -14,7 +14,7 @@ const spec = await openapi({
 app.use(spec.docs("/docs")); // UI at /docs, spec at /docs/openapi.json
 ```
 
-`.from()` accepts an `App`, one or more `Router`s, or a mix — anything with `.routes()`. It is async: schema conversion lazily imports whichever library each schema came from.
+`.from()` accepts an `App`, one or more `Router`s, or a mix — anything with `.routes()`.
 
 ## What gets documented
 
