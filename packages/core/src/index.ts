@@ -6,6 +6,19 @@ export {
   runWithCtx,
 } from "./als.js";
 export {
+  type Config,
+  ConfigError,
+  type ConfigIssue,
+  type ConfigShape,
+  type DefineConfigOptions,
+  defineConfig,
+  envName,
+  type InferConfig,
+  type InferConfigInput,
+  resolveConfig,
+} from "./config/define.js";
+export { type EnvSchema, env, type LeafOptions } from "./config/env.js";
+export {
   type CtxOptions,
   createCtx,
   ctxOf,
@@ -154,4 +167,5 @@ export type {
   StandardTypes,
 } from "./schema/standard.js";
 export type { MaybePromise, Simplify, UnionToIntersection } from "./types.js";
+export { parseBytes } from "./util/bytes.js";
 export { parseDuration } from "./util/duration.js";

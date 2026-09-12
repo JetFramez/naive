@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "cookie": "catalog:",
+    "dotenv": "catalog:",
     "express": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:"
