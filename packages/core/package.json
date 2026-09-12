@@ -25,7 +25,9 @@
   },
   "dependencies": {
     "cookie": "catalog:",
-    "express": "catalog:"
+    "express": "catalog:",
+    "pino": "catalog:",
+    "pino-pretty": "catalog:"
   },
   "devDependencies": {
     "@types/express": "catalog:",

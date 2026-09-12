@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import express, { type RequestHandler } from "express";
+import { runInCtx } from "../als.js";
 import { ensureCtx, type RequestContext } from "../ctx/create.js";
 import { RESPONSE } from "../response/types.js";
 import { parseDuration } from "../util/duration.js";
@@ -70,13 +71,15 @@ function routeHandler(route: CompiledRoute, options: CompileOptions): RequestHan
   return (req, res, next) => {
     const ctx = ensureCtx(req, res);
     ctx.route = routeLabel;
+    ctx.log = ctx.log.child({ route: routeLabel });
     ctx.responseSchema = info.response;
-    void (async () => {
+    void runInCtx(ctx, async () => {
       let result: unknown;
       try {
         await runHooks(ctx, hooks.onRequest, [ctx], false);
         const chain = await runChain(steps, ctx);
         result = chain.value;
+        ctx.result = result;
         if (checkResponse && chain.produced) {
           const candidate =
             isDescriptor(result) && result[RESPONSE] === "json" ? result.data : result;
@@ -91,12 +94,18 @@ function routeHandler(route: CompiledRoute, options: CompileOptions): RequestHan
           next(error.target);
           return;
         }
-        markHandled(error);
-        await runHooks(ctx, hooks.onError, [ctx, error], true);
+        await failRequest(ctx, hooks, error);
         next(error);
       }
-    })();
+    });
   };
+}
+
+/** Flags the error, then runs router hooks and app hooks, so the error handler does not repeat them. */
+async function failRequest(ctx: RequestContext, hooks: RouterHooks, error: unknown): Promise<void> {
+  markHandled(error);
+  await runHooks(ctx, hooks.onError, [ctx, error], true);
+  await runHooks(ctx, ctx.appHooks.onError, [ctx, error], true);
 }
 
 function staticHandler(entry: CompiledStatic): RequestHandler {
@@ -130,7 +139,7 @@ function redirectHandler(entry: CompiledRedirect): RequestHandler {
 function passthrough(steps: Step[], hooks: RouterHooks, terminal = false): RequestHandler {
   return (req, res, next) => {
     const ctx = ensureCtx(req, res);
-    void (async () => {
+    void runInCtx(ctx, async () => {
       try {
         await runHooks(ctx, hooks.onRequest, [ctx], false);
         const chain = await runChain(steps, ctx);
@@ -147,11 +156,10 @@ function passthrough(steps: Step[], hooks: RouterHooks, terminal = false): Reque
           next(error.target);
           return;
         }
-        markHandled(error);
-        await runHooks(ctx, hooks.onError, [ctx, error], true);
+        await failRequest(ctx, hooks, error);
         next(error);
       }
-    })();
+    });
   };
 }
 

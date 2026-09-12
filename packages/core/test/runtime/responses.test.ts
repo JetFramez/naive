@@ -3,9 +3,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Readable } from "node:stream";
 import express from "express";
-import { describe, expect, it, vi } from "vitest";
-import { createConsoleLogger, createCtx, Router } from "../../src/index.js";
+import { describe, expect, it } from "vitest";
+import { createCtx, Router } from "../../src/index.js";
 import { withApp } from "../helpers/http.js";
+import { captureLogger, LEVEL } from "../helpers/logger.js";
 
 describe("plain return conventions", () => {
   it("sends strings as text/plain 200", async () => {
@@ -110,10 +111,8 @@ describe("plain return conventions", () => {
   });
 
   it("does nothing when the handler already wrote to ctx.res, and warns if a value was returned", async () => {
-    const warn = vi.fn();
-    const logger = createConsoleLogger("silent" as never);
-    logger.warn = warn;
-    logger.child = () => logger;
+    const { logger, lines } = captureLogger();
+    const warnings = () => lines.filter((l) => l.level === LEVEL.warn);
     const r = new Router();
     r.get("/raw").handle((ctx) => {
       ctx.res.status(200).send("direct");
@@ -132,9 +131,10 @@ describe("plain return conventions", () => {
       },
       async ({ fetch }) => {
         expect(await (await fetch("/raw")).text()).toBe("direct");
-        expect(warn).not.toHaveBeenCalled();
+        expect(warnings()).toHaveLength(0);
         expect(await (await fetch("/both")).text()).toBe("direct");
-        expect(warn).toHaveBeenCalledTimes(1);
+        expect(warnings()).toHaveLength(1);
+        expect(warnings()[0]?.msg).toMatch(/also returned a value/);
       },
     );
   });

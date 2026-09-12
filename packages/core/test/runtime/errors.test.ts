@@ -1,10 +1,9 @@
 import express from "express";
 import * as v from "valibot";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
   classifyError,
-  createConsoleLogger,
   createCtx,
   defineError,
   errorHandler,
@@ -17,6 +16,7 @@ import {
   Unprocessable,
 } from "../../src/index.js";
 import { json, serve, withApp } from "../helpers/http.js";
+import { captureLogger, LEVEL } from "../helpers/logger.js";
 
 describe("HttpError family", () => {
   it("carries status, code, default messages and details", () => {
@@ -166,10 +166,7 @@ describe("errorHandler", () => {
   });
 
   it("hides messages and stacks when expose is false, and logs 5xx", async () => {
-    const error = vi.fn();
-    const logger = createConsoleLogger();
-    logger.error = error;
-    logger.child = () => logger;
+    const { logger, lines } = captureLogger();
     const r = new Router();
     r.get("/boom").handle(() => {
       throw new Error("secret detail");
@@ -192,14 +189,17 @@ describe("errorHandler", () => {
         message: "Internal Server Error",
         requestId: expect.any(String),
       });
-      expect(error).toHaveBeenCalledTimes(1);
-      expect(error.mock.calls[0]?.[0]).toMatchObject({
+      const errors = () => lines.filter((l) => l.level === LEVEL.error);
+      expect(errors()).toHaveLength(1);
+      expect(errors()[0]).toMatchObject({
         status: 500,
         code: "INTERNAL",
         route: "GET /boom",
+        msg: "Internal Server Error",
+        err: { message: "secret detail" },
       });
       await server.fetch("/nf");
-      expect(error).toHaveBeenCalledTimes(1);
+      expect(errors()).toHaveLength(1);
     } finally {
       await server.close();
     }

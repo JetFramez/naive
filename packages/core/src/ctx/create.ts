@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import type { Readable } from "node:stream";
 import type { Request, Response } from "express";
-import { getRootLogger } from "../logger/console.js";
+import type { AppHooks } from "../hooks.js";
+import { getRootLogger } from "../logger/root.js";
 import type { Logger } from "../logger/types.js";
 import {
   type DownloadResponse,
@@ -73,9 +74,6 @@ export class RequestContext implements Ctx {
   readonly headers: Headers;
   readonly cookies: CookieJar;
 
-  params: Record<string, unknown>;
-  query: Record<string, unknown>;
-  body: unknown;
   route: string | undefined = undefined;
   log: Logger;
 
@@ -83,8 +81,18 @@ export class RequestContext implements Ctx {
   statusCode: number | undefined = undefined;
   /** Installed by the router when the route declared `.response(schema)`. */
   responseSchema: StandardSchemaV1 | undefined = undefined;
+  /** App-level hooks registered by the context middleware. */
+  readonly appHooks: AppHooks = { onRequest: [], onResponse: [], onError: [] };
+  /** The handler's return value, for app-level `onResponse`. */
+  result: unknown = undefined;
+  readonly startedAt: number = Date.now();
+  requestLogArmed = false;
 
   #url: URL | undefined;
+  #params: Record<string, unknown> | undefined;
+  #query: Record<string, unknown> | undefined;
+  #rawQuery: { source: unknown; value: Record<string, unknown> } | undefined;
+  #body: { value: unknown } | undefined;
 
   constructor(req: Request, res: Response, options: CtxOptions = {}) {
     this.req = req;
@@ -93,12 +101,45 @@ export class RequestContext implements Ctx {
     this.path = (req.originalUrl ?? req.url).split("?")[0] ?? "/";
     const incoming = req.headers["x-request-id"];
     this.requestId = (Array.isArray(incoming) ? incoming[0] : incoming) || randomUUID();
-    this.params = { ...req.params };
-    this.query = normaliseQuery(req.query as Record<string, unknown>);
-    this.body = req.body;
     this.headers = new Headers(this);
     this.cookies = new CookieJar(this, { secret: options.cookieSecret });
     this.log = (options.logger ?? getRootLogger()).child({ requestId: this.requestId });
+  }
+
+  /**
+   * Path params: the validated value once the route's params schema ran,
+   * otherwise the live `req.params` (the context may predate routing).
+   */
+  get params(): Record<string, unknown> {
+    return this.#params ?? this.req.params;
+  }
+
+  set params(value: Record<string, unknown>) {
+    this.#params = value;
+  }
+
+  /** Query: validated value, otherwise `req.query` normalised to strings and string arrays. */
+  get query(): Record<string, unknown> {
+    if (this.#query) return this.#query;
+    const source: unknown = this.req.query;
+    const cached = this.#rawQuery;
+    if (cached && cached.source === source) return cached.value;
+    const value = normaliseQuery(source as Record<string, unknown>);
+    this.#rawQuery = { source, value };
+    return value;
+  }
+
+  set query(value: Record<string, unknown>) {
+    this.#query = value;
+  }
+
+  /** Body: validated value, otherwise whatever the body parser put on `req.body`. */
+  get body(): unknown {
+    return this.#body ? this.#body.value : this.req.body;
+  }
+
+  set body(value: unknown) {
+    this.#body = { value };
   }
 
   get url(): URL {

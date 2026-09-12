@@ -2,7 +2,9 @@ import { STATUS_CODES } from "node:http";
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import { ensureCtx } from "../ctx/create.js";
 import type { Ctx } from "../ctx/types.js";
+import { runHooksSafely } from "../hooks.js";
 import type { Logger } from "../logger/types.js";
+import { wasHandledByRouter } from "../router/compile.js";
 import { toIssues } from "../router/validate.js";
 import type { StandardIssue } from "../schema/standard.js";
 import { type HttpError, isHttpError, NotFound } from "./http-error.js";
@@ -153,34 +155,44 @@ export function errorHandler(options: ErrorHandlerOptions = {}): ErrorRequestHan
       return;
     }
     const ctx = ensureCtx(req, res, { logger: options.logger });
-    let mapped: MappedError | undefined;
-    let source: unknown = error;
-    try {
-      const custom = options.map?.(error, ctx);
-      if (isHttpError(custom)) mapped = classifyError(custom, expose);
-      else if (custom) mapped = custom;
-    } catch (mapError) {
-      source = mapError;
+    if (!wasHandledByRouter(error) && ctx.appHooks.onError.length > 0) {
+      void runHooksSafely(ctx, ctx.appHooks.onError, [ctx, error]).then(() => render(error));
+      return;
     }
-    mapped ??= classifyError(source, expose);
+    render(error);
 
-    if (mapped.status >= 500) {
-      ctx.log.error(
-        { err: source, status: mapped.status, code: mapped.code, route: ctx.route },
-        mapped.message,
-      );
-    }
+    function render(error: unknown): void {
+      let mapped: MappedError | undefined;
+      let source: unknown = error;
+      try {
+        const custom = options.map?.(error, ctx);
+        if (isHttpError(custom)) mapped = classifyError(custom, expose);
+        else if (custom) mapped = custom;
+      } catch (mapError) {
+        source = mapError;
+      }
+      mapped ??= classifyError(source, expose);
 
-    const stack =
-      expose && mapped.status >= 500 && source instanceof Error ? source.stack : undefined;
-    const body = options.format ? options.format(mapped, ctx) : defaultEnvelope(mapped, ctx, stack);
-    res.status(mapped.status);
-    if (body === undefined || body === null) {
-      res.end();
-    } else if (typeof body === "string") {
-      res.send(body);
-    } else {
-      res.json(body);
+      if (mapped.status >= 500) {
+        ctx.log.error(
+          { err: source, status: mapped.status, code: mapped.code, route: ctx.route },
+          mapped.message,
+        );
+      }
+
+      const stack =
+        expose && mapped.status >= 500 && source instanceof Error ? source.stack : undefined;
+      const body = options.format
+        ? options.format(mapped, ctx)
+        : defaultEnvelope(mapped, ctx, stack);
+      res.status(mapped.status);
+      if (body === undefined || body === null) {
+        res.end();
+      } else if (typeof body === "string") {
+        res.send(body);
+      } else {
+        res.json(body);
+      }
     }
   };
 }
