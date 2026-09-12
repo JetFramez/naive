@@ -3,13 +3,11 @@ import { eq } from "drizzle-orm";
 import type { AppDatabase } from "./db.js";
 import { sessions, users } from "./schema.js";
 
-// #region user-interface
 export interface User {
   readonly id: string;
   readonly email: string;
   readonly name: string;
 }
-// #endregion user-interface
 
 /**
  * `AuthAdapter<User>` on Drizzle + SQLite. Every method is declared `async`
@@ -30,7 +28,6 @@ export function createDrizzleAdapter(db: AppDatabase): AuthAdapter<User> {
         : null;
     },
 
-    // #region session-methods
     async createSession({ tokenHash, userId, familyId, expiresAt }) {
       db.insert(sessions).values({ tokenHash, userId, familyId, expiresAt, rotatedAt: null }).run();
     },
@@ -46,7 +43,6 @@ export function createDrizzleAdapter(db: AppDatabase): AuthAdapter<User> {
         createdAt: row.createdAt,
       };
     },
-    // #endregion session-methods
 
     async updateSession(tokenHash, changes) {
       db.update(sessions).set(changes).where(eq(sessions.tokenHash, tokenHash)).run();
