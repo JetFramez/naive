@@ -1,7 +1,8 @@
 import { Router } from "@notio-internal/core";
-import Keyv from "keyv";
+import RedisMock from "ioredis-mock";
 import { describe, expect, it } from "vitest";
 import { rateLimit } from "../src/rate-limit.js";
+import type { RedisLike } from "../src/types.js";
 import { withApp } from "./helpers/http.js";
 
 describe("rateLimit()", () => {
@@ -147,8 +148,8 @@ describe("rateLimit()", () => {
     }
   });
 
-  it("shares one Keyv store across limiters, isolated by name", async () => {
-    const store = new Keyv().opts.store;
+  it("runs on a Redis client end to end, sharing one client across limiters isolated by name", async () => {
+    const store = new RedisMock() as unknown as RedisLike;
     const router = new Router();
     router
       .get("/a")
@@ -156,15 +157,44 @@ describe("rateLimit()", () => {
       .handle(() => "ok");
     router
       .get("/b")
-      .use(rateLimit({ limit: 1, window: "1m", store, name: "b" }))
+      .use(rateLimit({ limit: 1, window: "1m", store, name: "b", algorithm: "token-bucket" }))
       .handle(() => "ok");
     await withApp(
       (app) => app.mount(router),
       async ({ fetch }) => {
         expect((await fetch("/a")).status).toBe(200);
-        expect((await fetch("/b")).status).toBe(200); // independent, despite the shared underlying store
-        expect((await fetch("/a")).status).toBe(429);
+        expect((await fetch("/b")).status).toBe(200);
+        const a = await fetch("/a");
+        expect(a.status).toBe(429);
+        expect(a.headers.get("ratelimit-remaining")).toBe("0");
         expect((await fetch("/b")).status).toBe(429);
+      },
+    );
+  });
+
+  it("falls back to memory for a request when Redis throws, and fails closed with fallback: false", async () => {
+    const broken: RedisLike = {
+      eval: async () => {
+        throw new Error("ECONNREFUSED");
+      },
+    };
+    const router = new Router();
+    router
+      .get("/soft")
+      .use(rateLimit({ limit: 1, window: "1m", store: broken, name: "soft" }))
+      .handle(() => "ok");
+    router
+      .get("/hard")
+      .use(rateLimit({ limit: 1, window: "1m", store: broken, name: "hard", fallback: false }))
+      .handle(() => "ok");
+    await withApp(
+      (app) => app.mount(router),
+      async ({ fetch }) => {
+        expect((await fetch("/soft")).status).toBe(200);
+        expect((await fetch("/soft")).status).toBe(429); // memory copy still enforces
+        const hard = await fetch("/hard");
+        expect(hard.status).toBe(500);
+        expect((await hard.json()).message).toMatch(/ECONNREFUSED/);
       },
     );
   });

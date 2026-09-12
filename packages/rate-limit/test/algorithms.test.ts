@@ -1,116 +1,162 @@
-import Keyv from "keyv";
+import RedisMock from "ioredis-mock";
 import { beforeEach, describe, expect, it } from "vitest";
-import { fixedWindow, slidingWindow, tokenBucket } from "../src/algorithms.js";
+import { fixedMemory, fixedRedis } from "../src/algorithms/fixed.js";
+import { slidingMemory, slidingRedis } from "../src/algorithms/sliding.js";
+import { tokenBucketMemory, tokenBucketRedis } from "../src/algorithms/token-bucket.js";
+import { MemoryStore } from "../src/memory.js";
+import type { ConsumeArgs, ConsumeResult, RedisLike } from "../src/types.js";
 
-const tick = (ms: number) => new Promise((r) => setTimeout(r, ms));
+type Consume = (args: ConsumeArgs) => Promise<ConsumeResult> | ConsumeResult;
 
-let store: Keyv;
-beforeEach(() => {
-  store = new Keyv();
-});
+interface Backend {
+  readonly name: string;
+  make(): { fixed: Consume; sliding: Consume; tokenBucket: Consume };
+}
 
-describe("fixedWindow", () => {
-  it("allows up to the limit, then rejects within the same window", async () => {
-    const opts = { store, key: "a", limit: 3, windowMs: 200, cost: 1 };
-    expect((await fixedWindow(opts)).allowed).toBe(true);
-    expect((await fixedWindow(opts)).allowed).toBe(true);
-    const third = await fixedWindow(opts);
-    expect(third.allowed).toBe(true);
-    expect(third.remaining).toBe(0);
-    const fourth = await fixedWindow(opts);
-    expect(fourth.allowed).toBe(false);
-    expect(fourth.remaining).toBe(0);
-    expect(fourth.retryAfterMs).toBeGreaterThan(0);
+const backends: Backend[] = [
+  {
+    name: "memory",
+    make() {
+      const store = new MemoryStore();
+      return {
+        fixed: (a) => fixedMemory(store, a),
+        sliding: (a) => slidingMemory(store, a),
+        tokenBucket: (a) => tokenBucketMemory(store, a),
+      };
+    },
+  },
+  {
+    name: "redis (ioredis-mock, real Lua)",
+    make() {
+      const client = new RedisMock() as unknown as RedisLike;
+      return {
+        fixed: (a) => fixedRedis(client, a),
+        sliding: (a) => slidingRedis(client, a),
+        tokenBucket: (a) => tokenBucketRedis(client, a),
+      };
+    },
+  },
+];
+
+// A controllable clock: every call passes `now` explicitly, so no real waiting.
+function clock(start = 1_000_000) {
+  let now = start;
+  return { now: () => now, advance: (ms: number) => (now += ms) };
+}
+
+describe.each(backends)("$name", (backend) => {
+  let b: ReturnType<Backend["make"]>;
+  beforeEach(() => {
+    b = backend.make();
   });
 
-  it("resets after the window elapses", async () => {
-    const opts = { store, key: "b", limit: 1, windowMs: 40, cost: 1 };
-    expect((await fixedWindow(opts)).allowed).toBe(true);
-    expect((await fixedWindow(opts)).allowed).toBe(false);
-    await tick(60);
-    expect((await fixedWindow(opts)).allowed).toBe(true);
+  describe("fixed", () => {
+    it("allows up to the limit, then rejects within the same window", async () => {
+      const c = clock();
+      const args = { key: "t:a", limit: 3, windowMs: 1000, cost: 1 };
+      expect((await b.fixed({ ...args, now: c.now() })).allowed).toBe(true);
+      expect((await b.fixed({ ...args, now: c.now() })).allowed).toBe(true);
+      const third = await b.fixed({ ...args, now: c.now() });
+      expect(third.allowed).toBe(true);
+      expect(third.remaining).toBe(0);
+      const fourth = await b.fixed({ ...args, now: c.now() });
+      expect(fourth.allowed).toBe(false);
+      expect(fourth.remaining).toBe(0);
+      expect(fourth.retryAfterMs).toBeGreaterThan(0);
+    });
+
+    it("resets at the window boundary", async () => {
+      const c = clock();
+      const args = { key: "t:b", limit: 1, windowMs: 1000, cost: 1 };
+      expect((await b.fixed({ ...args, now: c.now() })).allowed).toBe(true);
+      expect((await b.fixed({ ...args, now: c.now() })).allowed).toBe(false);
+      c.advance(1000);
+      expect((await b.fixed({ ...args, now: c.now() })).allowed).toBe(true);
+    });
+
+    it("respects cost and keeps keys separate", async () => {
+      const c = clock();
+      const args = { key: "t:c", limit: 5, windowMs: 1000, now: c.now() };
+      expect((await b.fixed({ ...args, cost: 3 })).remaining).toBe(2);
+      expect((await b.fixed({ ...args, cost: 3 })).allowed).toBe(false);
+      expect((await b.fixed({ ...args, key: "t:other", cost: 3 })).allowed).toBe(true);
+    });
+
+    it("counts concurrent requests exactly: no two see the same total", async () => {
+      const now = clock().now();
+      const args = { key: "t:conc", limit: 5, windowMs: 1000, cost: 1, now };
+      const results = await Promise.all(Array.from({ length: 10 }, () => b.fixed(args)));
+      expect(results.filter((r) => r.allowed)).toHaveLength(5);
+    });
   });
 
-  it("respects a per-call cost", async () => {
-    const opts = { store, key: "c", limit: 5, windowMs: 200, cost: 3 };
-    const first = await fixedWindow(opts);
-    expect(first.allowed).toBe(true);
-    expect(first.remaining).toBe(2);
-    const second = await fixedWindow({ ...opts, cost: 3 });
-    expect(second.allowed).toBe(false);
-    const third = await fixedWindow({ ...opts, cost: 2 });
-    expect(third.allowed).toBe(true);
-    expect(third.remaining).toBe(0);
+  describe("sliding", () => {
+    it("allows up to the limit within one window", async () => {
+      const c = clock();
+      const args = { key: "s:a", limit: 2, windowMs: 1000, cost: 1 };
+      expect((await b.sliding({ ...args, now: c.now() })).allowed).toBe(true);
+      expect((await b.sliding({ ...args, now: c.now() })).allowed).toBe(true);
+      expect((await b.sliding({ ...args, now: c.now() })).allowed).toBe(false);
+    });
+
+    it("carries a fraction of the previous window forward, then forgets it", async () => {
+      const c = clock();
+      const args = { key: "s:b", limit: 2, windowMs: 1000, cost: 1 };
+      await b.sliding({ ...args, now: c.now() });
+      await b.sliding({ ...args, now: c.now() });
+      c.advance(1000); // just past the boundary: previous window still weighs ~100%
+      expect((await b.sliding({ ...args, now: c.now() })).allowed).toBe(false);
+      c.advance(1000); // a full window later: previous window has fallen out
+      const later = await b.sliding({ ...args, now: c.now() });
+      expect(later.allowed).toBe(true);
+    });
+
+    it("counts concurrent requests exactly", async () => {
+      const now = clock().now();
+      const args = { key: "s:conc", limit: 4, windowMs: 1000, cost: 1, now };
+      const results = await Promise.all(Array.from({ length: 10 }, () => b.sliding(args)));
+      expect(results.filter((r) => r.allowed)).toHaveLength(4);
+    });
   });
 
-  it("keeps separate counters per key", async () => {
-    const opts = { store, key: "x", limit: 1, windowMs: 200, cost: 1 };
-    expect((await fixedWindow(opts)).allowed).toBe(true);
-    expect((await fixedWindow({ ...opts, key: "y" })).allowed).toBe(true);
-    expect((await fixedWindow(opts)).allowed).toBe(false);
-  });
-});
+  describe("token-bucket", () => {
+    it("allows a burst up to the limit, then throttles", async () => {
+      const c = clock();
+      const args = { key: "tb:a", limit: 3, windowMs: 3000, cost: 1 };
+      expect((await b.tokenBucket({ ...args, now: c.now() })).allowed).toBe(true);
+      expect((await b.tokenBucket({ ...args, now: c.now() })).allowed).toBe(true);
+      const third = await b.tokenBucket({ ...args, now: c.now() });
+      expect(third.allowed).toBe(true);
+      expect(third.remaining).toBe(0);
+      const fourth = await b.tokenBucket({ ...args, now: c.now() });
+      expect(fourth.allowed).toBe(false);
+      expect(fourth.retryAfterMs).toBe(1000); // one token refills every 1000ms
+    });
 
-describe("slidingWindow", () => {
-  it("allows up to the limit within one window", async () => {
-    const opts = { store, key: "a", limit: 2, windowMs: 200, cost: 1 };
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    expect((await slidingWindow(opts)).allowed).toBe(false);
-  });
+    it("refills gradually rather than all at once", async () => {
+      const c = clock();
+      const args = { key: "tb:b", limit: 10, windowMs: 1000 };
+      expect((await b.tokenBucket({ ...args, cost: 10, now: c.now() })).allowed).toBe(true);
+      c.advance(500); // ~5 tokens back
+      expect((await b.tokenBucket({ ...args, cost: 4, now: c.now() })).allowed).toBe(true);
+      expect((await b.tokenBucket({ ...args, cost: 4, now: c.now() })).allowed).toBe(false);
+    });
 
-  it("carries a fraction of the previous window's usage forward", async () => {
-    const opts = { store, key: "b", limit: 2, windowMs: 100, cost: 1 };
-    // Fill the window, then cross into the next one; usage should not immediately reset to zero.
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    await tick(105); // now in the next window
-    const afterBoundary = await slidingWindow(opts);
-    // A fresh fixed window would allow 2 more; the sliding approximation still
-    // remembers most of the previous window's usage right after the boundary.
-    expect(afterBoundary.remaining).toBeLessThan(2);
-  });
+    it("never stores more than the limit's worth of capacity", async () => {
+      const c = clock();
+      const args = { key: "tb:c", limit: 5, windowMs: 100 };
+      await b.tokenBucket({ ...args, cost: 1, now: c.now() });
+      c.advance(10_000);
+      const result = await b.tokenBucket({ ...args, cost: 5, now: c.now() });
+      expect(result.allowed).toBe(true);
+      expect(result.remaining).toBe(0);
+    });
 
-  it("fully forgets usage once a full window has passed with no more activity", async () => {
-    const opts = { store, key: "c", limit: 2, windowMs: 50, cost: 1 };
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    expect((await slidingWindow(opts)).allowed).toBe(true);
-    await tick(120); // more than a full window with no activity
-    const result = await slidingWindow(opts);
-    expect(result.allowed).toBe(true);
-    expect(result.remaining).toBe(1);
-  });
-});
-
-describe("tokenBucket", () => {
-  it("allows a burst up to the limit, then throttles until tokens refill", async () => {
-    const opts = { store, key: "a", limit: 3, windowMs: 300, cost: 1 };
-    expect((await tokenBucket(opts)).allowed).toBe(true);
-    expect((await tokenBucket(opts)).allowed).toBe(true);
-    const third = await tokenBucket(opts);
-    expect(third.allowed).toBe(true);
-    expect(third.remaining).toBe(0);
-    const fourth = await tokenBucket(opts);
-    expect(fourth.allowed).toBe(false);
-    expect(fourth.retryAfterMs).toBeGreaterThan(0);
-  });
-
-  it("refills gradually over the window rather than resetting all at once", async () => {
-    const opts = { store, key: "b", limit: 10, windowMs: 100, cost: 10 };
-    expect((await tokenBucket(opts)).allowed).toBe(true); // spend everything
-    await tick(55); // roughly half the window: ~5 tokens back
-    const half = await tokenBucket({ ...opts, cost: 4 });
-    expect(half.allowed).toBe(true);
-    const overspend = await tokenBucket({ ...opts, cost: 4 });
-    expect(overspend.allowed).toBe(false);
-  });
-
-  it("never exceeds the limit's worth of stored capacity", async () => {
-    const opts = { store, key: "c", limit: 5, windowMs: 30, cost: 1 };
-    await tokenBucket(opts);
-    await tick(200); // far longer than the window
-    const result = await tokenBucket({ ...opts, cost: 5 });
-    expect(result.allowed).toBe(true);
-    expect(result.remaining).toBe(0);
+    it("spends concurrent requests exactly", async () => {
+      const now = clock().now();
+      const args = { key: "tb:conc", limit: 3, windowMs: 1000, cost: 1, now };
+      const results = await Promise.all(Array.from({ length: 10 }, () => b.tokenBucket(args)));
+      expect(results.filter((r) => r.allowed)).toHaveLength(3);
+    });
   });
 });

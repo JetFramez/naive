@@ -15,6 +15,9 @@ catalog:
   keyv: ^5.6.0
   "@keyv/redis": ^5.1.6
   jose: ^6.2.12
+  ioredis: ^5.11.1
+  ioredis-mock: ^8.13.1
+  "@types/ioredis-mock": ^8
   "@node-rs/argon2": ^2.2.1
   busboy: ^1.6.0
   "@types/busboy": ^1.5.4

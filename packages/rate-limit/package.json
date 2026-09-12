@@ -24,11 +24,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@notio-internal/core": "workspace:*",
-    "keyv": "catalog:"
+    "@notio-internal/core": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "catalog:",
+    "@types/ioredis-mock": "catalog:",
+    "ioredis": "catalog:",
+    "ioredis-mock": "catalog:",
     "@types/node": "catalog:",
     "express": "catalog:",
     "tsdown": "catalog:",

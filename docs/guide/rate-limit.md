@@ -1,6 +1,6 @@
 # Rate limiting
 
-`@jetframez/notio/rate-limit` limits requests by a key, on a Keyv store — memory by default, Redis through the same `@keyv/redis` adapter the cache module uses.
+`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out, hand it your Redis client and every decision becomes one atomic Lua script on the server.
 
 ```ts
 import { rateLimit } from "@jetframez/notio/rate-limit";
@@ -18,28 +18,42 @@ Every response the limiter sees carries `RateLimit-Limit`, `RateLimit-Remaining`
 |---|---|---|
 | `limit` | — | Points allowed per window. |
 | `window` | `"1m"` | Milliseconds or a duration string. |
-| `key` | `ctx.ip` | Groups requests into a bucket. Returning `null`/`undefined` skips the limit for that request entirely. |
+| `key` | `ctx.ip` | Groups requests into a bucket. Returning `null`/`undefined` skips the limit for that request. |
 | `skip` | — | Return `true` to bypass the limiter (health checks, internal callers). |
 | `cost` | `1` | Points this request consumes; a number or `(ctx) => number`. |
 | `algorithm` | `"fixed"` | `"fixed"`, `"sliding"`, or `"token-bucket"`. |
-| `store` | memory | A Keyv store adapter. `await redisStore(url)` from the cache module works here too. |
-| `name` | `"notio-rate-limit"` | Namespaces this limiter's keys, so several `rateLimit()` calls can safely share one store. |
+| `store` | memory | A Redis client (`ioredis`, or anything with an ioredis-style `eval`). |
+| `name` | `"notio-rate-limit"` | Namespaces this limiter's keys, so several `rateLimit()` calls can share one client. |
+| `fallback` | `true` | With a Redis store: if Redis errors, decide from an in-process copy for that request instead of failing it. `false` fails closed. |
 | `onLimited` | — | `(ctx, { limit, window, retryAfter, key }) => void`, called exactly when a request is rejected. |
 
 ## Algorithms
 
-- **`fixed`** — a counter per time bucket, reset at the boundary. Cheap and predictable; a burst can land two limits' worth of requests across an adjacent boundary.
-- **`sliding`** — the current bucket's count plus a time-weighted fraction of the previous bucket's, approximating a true sliding window without storing a timestamp per request.
-- **`token-bucket`** — capacity refills continuously over `window`; unused capacity carries forward up to `limit`, so a client that has been quiet can burst back up to the full limit.
+- **`fixed`** — one counter per time bucket, reset at the boundary. Cheapest and most predictable. A burst straddling a boundary can land two limits' worth in a short span.
+- **`sliding`** — this bucket's count plus a time-weighted share of the previous bucket's. Removes the boundary effect and gives a hard "N in any window" guarantee, without storing a timestamp per request. Use it when you publish the limit as a contract.
+- **`token-bucket`** — `limit` tokens refill continuously over `window`; unused capacity carries forward up to `limit`. A quiet client can burst to the full limit; a client that stays over the average rate drains to zero and is throttled. The friendliest to real apps and browsers, whose traffic arrives in bursts.
 
-All three read and write through the same Keyv store via a get-then-set, not an atomic increment. Under concurrent requests hitting the same key at the same instant, a Redis-backed store can very briefly allow a few more requests than the configured limit — the same class of tradeoff most non-atomic rate limiters accept in exchange for working against any Keyv-compatible backend. For strict enforcement under heavy concurrency on a single key, put the limiter close to the client (a lower per-key concurrency) or set the limit a little below the true budget.
+## Atomicity
 
-## Sharing a store across limiters
+Both backends are race-free under concurrent requests to the same key. In memory, each decision is a synchronous read-modify-write with no `await` between the two, so nothing can interleave. On Redis, each decision is one Lua script run by `EVAL`, and Redis executes a script as a single indivisible command. Fixed and sliding increment first and decide from the returned total, so two concurrent requests can never observe the same count; the token bucket refills, spends and stores inside the script.
+
+The Redis scripts are exercised in the test suite against a Lua-executing mock, so they are covered without a Redis server in CI.
+
+## Redis
 
 ```ts
-const store = await redisStore(config.redis.url);
-app.use(rateLimit({ limit: 1000, window: "1m", store, name: "global" }));
-router.post("/login").use(rateLimit({ limit: 5, window: "15m", store, name: "login" }));
+import Redis from "ioredis";
+
+const redis = new Redis(config.redis.url);
+
+app.use(rateLimit({ limit: 1000, window: "1m", store: redis, name: "global" }));
+router.post("/login").use(rateLimit({ limit: 5, window: "15m", store: redis, name: "login" }));
 ```
 
-`name` keeps each limiter's keys separate even when they share one underlying store.
+Pass the client you already have; there is no adapter layer. `name` keeps each limiter's keys separate on the shared client. If Redis is unreachable, `fallback` (on by default) keeps requests flowing against a per-process copy and logs a warning; set `fallback: false` to fail closed instead.
+
+Window precision on Redis is milliseconds; sub-second windows are fine.
+
+## Why not the cache module's store option
+
+The cache module takes a Keyv store because caching benefits from swappable backends and does not need atomic operations. Rate limiting needs exactly one thing a generic key-value interface cannot offer, an atomic read-and-increment, so this module talks to Redis directly and stays deliberately narrower: memory or Redis, nothing in between.

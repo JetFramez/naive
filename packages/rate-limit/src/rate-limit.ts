@@ -1,7 +1,7 @@
 import type { Ctx, MaybePromise, Middleware } from "@notio-internal/core";
 import { parseDuration, TooManyRequests } from "@notio-internal/core";
-import Keyv, { type KeyvStoreAdapter } from "keyv";
-import { ALGORITHMS, type Algorithm } from "./algorithms.js";
+import { createConsumer } from "./store.js";
+import type { Algorithm, RedisLike } from "./types.js";
 
 export interface RateLimitInfo {
   readonly limit: number;
@@ -24,10 +24,16 @@ export interface RateLimitOptions {
   readonly cost?: number | ((ctx: Ctx) => MaybePromise<number>);
   /** Default `"fixed"`. */
   readonly algorithm?: Algorithm;
-  /** A Keyv store adapter; memory by default. Share one store across several `rateLimit()` calls freely, distinguished by `name`. */
-  readonly store?: KeyvStoreAdapter;
-  /** Namespaces this limiter's keys when a store is shared. Default `"notio-rate-limit"`. */
+  /**
+   * A Redis client (`ioredis`, or anything with an ioredis-style `eval`).
+   * Omit it for in-process memory. Share one client across several
+   * `rateLimit()` calls freely; `name` keeps their keys apart.
+   */
+  readonly store?: RedisLike;
+  /** Namespaces this limiter's keys. Default `"notio-rate-limit"`. */
   readonly name?: string;
+  /** With a Redis store: fall back to memory for a request when Redis errors. Default `true`. */
+  readonly fallback?: boolean;
   readonly onLimited?: (ctx: Ctx, info: RateLimitInfo) => MaybePromise<void>;
 }
 
@@ -35,14 +41,17 @@ export interface RateLimitOptions {
  * Rate limits requests. Sets `RateLimit-Limit`, `RateLimit-Remaining` and
  * `RateLimit-Reset` on every response the limiter sees; throws
  * `TooManyRequests` (429, with `Retry-After`) once the limit is exceeded.
+ * Atomic on both backends: memory decides synchronously, Redis runs one Lua
+ * script per decision.
  */
 export function rateLimit(options: RateLimitOptions): Middleware {
   const { limit } = options;
   const windowMs = parseDuration(options.window ?? "1m", "rate-limit window");
-  const consume = ALGORITHMS[options.algorithm ?? "fixed"];
-  const store = new Keyv({
-    ...(options.store ? { store: options.store } : {}),
-    namespace: options.name ?? "notio-rate-limit",
+  const prefix = options.name ?? "notio-rate-limit";
+  const consume = createConsumer({
+    algorithm: options.algorithm ?? "fixed",
+    redis: options.store,
+    fallback: options.fallback,
   });
   const keyOf = options.key ?? ((ctx: Ctx) => ctx.ip);
 
@@ -57,7 +66,13 @@ export function rateLimit(options: RateLimitOptions): Middleware {
       return;
     }
     const cost = typeof options.cost === "function" ? await options.cost(ctx) : (options.cost ?? 1);
-    const result = await consume({ store, key, limit, windowMs, cost });
+    const result = await consume({
+      key: `${prefix}:${key}`,
+      limit,
+      windowMs,
+      cost,
+      now: Date.now(),
+    });
 
     ctx.set("RateLimit-Limit", String(limit));
     ctx.set("RateLimit-Remaining", String(Math.max(result.remaining, 0)));
