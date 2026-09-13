@@ -1,69 +1,557 @@
 /**
- * notio brand colour. Swap these to change the whole site's accent —
- * everything else derives from these three variables.
+ * Design tokens transcribed from the Notio design handoff (Notio.dc.html /
+ * the accompanying README). Values are exact; only the delivery mechanism
+ * changed from inline styles to these custom properties + classes.
  */
 :root {
-  --vp-c-brand-1: #14b8a6;
-  --vp-c-brand-2: #0d9488;
-  --vp-c-brand-3: #0f766e;
-  --vp-c-brand-soft: rgba(20, 184, 166, 0.14);
+  --bg-page: oklch(0.985 0.009 85);
+  --bg-muted: oklch(0.975 0.01 85);
+  --surface-card: oklch(1 0 0);
+  --surface-inline-code: oklch(0.94 0.012 85);
+  --surface-code-block: oklch(0.25 0.016 90);
+  --surface-code-chrome-border: oklch(0.32 0.018 90);
 
-  --vp-home-hero-name-color: var(--vp-c-brand-1);
-  --vp-home-hero-name-background: transparent;
+  --border-hairline: oklch(0.92 0.012 85);
+  --border-table-inner: oklch(0.94 0.012 85);
+  --border-button: oklch(0.9 0.012 85);
+
+  --ink-primary: oklch(0.22 0.014 85);
+  --ink-body: oklch(0.42 0.018 85);
+  --ink-muted: oklch(0.5 0.02 85);
+  --ink-faint: oklch(0.54 0.02 85);
+  --ink-on-dark-code: oklch(0.9 0.008 90);
+
+  --accent-green: oklch(0.58 0.13 145);
+  --accent-green-text: oklch(0.4 0.09 148);
+  --accent-green-numeral: oklch(0.52 0.12 148);
+  --accent-green-tint: oklch(0.94 0.03 145);
+
+  --link: oklch(0.46 0.1 148);
+  --link-hover: oklch(0.36 0.09 148);
+  --selection: oklch(0.88 0.08 145);
+
+  --code-comment: oklch(0.68 0.03 155);
+  --code-keyword: oklch(0.72 0.13 145);
+  --code-string: oklch(0.8 0.08 95);
+  --code-function: oklch(0.85 0.04 200);
+
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
 }
 
-.dark {
-  --vp-c-brand-1: #2dd4bf;
-  --vp-c-brand-2: #14b8a6;
-  --vp-c-brand-3: #0d9488;
-  --vp-c-brand-soft: rgba(45, 212, 191, 0.16);
+html {
+  scroll-behavior: smooth;
 }
 
-/**
- * Layout: a grouped left sidebar of in-page anchors (Start / Core /
- * Modules / …) instead of a two-item page switcher, with the current
- * section pill-highlighted as you scroll (see theme/index.ts).
- */
-
-/* Group labels: small, uppercase, muted — not a clickable-looking heading */
-.VPSidebar .VPSidebarItem.level-0 {
-  margin-top: 20px;
+body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
-.VPSidebar .VPSidebarItem.level-0 > .item {
-  padding-top: 4px;
-  padding-bottom: 4px;
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--link-hover);
+}
+
+::selection {
+  background: var(--selection);
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+/* Inline code in prose — every <code> outside a <pre> (the <pre> blocks use
+   <span> tokens directly, so this never touches syntax-highlighted code). */
+:not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--surface-inline-code);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+/* ---------- Page shell ---------- */
+
+.page-shell {
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--ink-primary);
+}
+
+.page-columns {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 48px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: flex-start;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  flex: 0 0 clamp(150px, 21vw, 244px);
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow: auto;
+  padding: 30px 0 40px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-primary);
+  margin-bottom: 30px;
+}
+.sidebar-brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--accent-green);
+  display: block;
+  flex: none;
+}
+.sidebar-brand-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.sidebar-brand-version {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.sidebar-group-label {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 24px;
+}
+
+.sidebar-link {
+  font-size: 14.5px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  color: var(--ink-body);
+  font-weight: 400;
+  background: transparent;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.sidebar-link.is-mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.sidebar-link.is-active {
+  background: var(--accent-green-tint);
+  color: var(--accent-green-text);
+  font-weight: 500;
+}
+
+.sidebar-note {
+  margin: 0;
+  padding: 0 11px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-faint);
+}
+.sidebar-note code {
+  font-size: 12.5px;
+}
+
+/* ---------- Content ---------- */
+
+.content {
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 0 0 120px;
+}
+
+.section {
+  scroll-margin-top: 30px;
+}
+.section + .section {
+  border-top: 1px solid var(--border-hairline);
+}
+
+.section-intro {
+  padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 6vw, 72px);
+}
+.section-body {
+  padding: clamp(36px, 5vw, 56px) 0 clamp(40px, 6vw, 64px);
+}
+.section-body.is-tall {
+  padding-bottom: clamp(44px, 6vw, 76px);
+}
+.section-body.is-last {
+  padding-bottom: 0;
+}
+
+.version-pill {
+  margin: 0 0 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: var(--accent-green-tint);
+  color: var(--accent-green-text);
+}
+.version-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+}
+
+.h1 {
+  margin: 0 0 22px;
+  font-size: clamp(34px, 5.4vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0 0 18px;
+  font-size: clamp(16px, 1.9vw, 19px);
+  line-height: 1.62;
+  color: var(--ink-body);
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
+.sub-lede {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-muted);
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
+.h2 {
+  margin: 0 0 14px;
+  font-size: clamp(24px, 3vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.18;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.h2-mono {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(22px, 2.6vw, 27px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.body-text {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-body);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+.body-text:last-of-type {
+  margin-bottom: 20px;
+}
+
+.note {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-faint);
+  max-width: 62ch;
+}
+
+/* ---------- Code blocks ---------- */
+
+.code {
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: var(--surface-code-block);
+  color: var(--ink-on-dark-code);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow: auto;
+}
+.code.is-shell {
+  line-height: 1.9;
+}
+.code.has-margin {
+  margin-bottom: 24px;
+}
+.code.has-small-margin {
+  margin-bottom: 16px;
+}
+
+.tok-k {
+  color: var(--code-keyword);
+}
+.tok-s {
+  color: var(--code-string);
+}
+.tok-f {
+  color: var(--code-function);
+}
+.tok-c {
+  color: var(--code-comment);
+}
+
+/* Window-chrome code card */
+.window-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface-code-block);
+  box-shadow:
+    0 2px 4px oklch(0.3 0.02 85 / 0.06),
+    0 24px 60px -44px oklch(0.25 0.016 90 / 0.8);
+  margin-bottom: 24px;
+}
+.window-card-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--surface-code-chrome-border);
+}
+.window-card-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: oklch(0.42 0.02 90);
+}
+.window-card-filename {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: oklch(0.7 0.02 90);
+  margin-left: 8px;
+}
+.window-card pre {
+  margin: 0;
+  padding: 20px 22px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--ink-on-dark-code);
+  overflow: auto;
+}
+
+/* ---------- Badges ---------- */
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: var(--surface-inline-code);
+  color: oklch(0.44 0.02 85);
+}
+.badge.is-green {
+  background: var(--accent-green-tint);
+  color: var(--accent-green-text);
+}
+.badge.is-dark {
+  background: var(--ink-primary);
+  color: var(--bg-page);
+}
+
+/* ---------- Stat cards ---------- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 14px;
+}
+.stat-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 2px oklch(0.3 0.02 85 / 0.04);
+}
+.stat-number {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--accent-green-numeral);
+}
+.stat-caption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: oklch(0.45 0.018 85);
+}
+
+/* ---------- Field table ---------- */
+
+.field-table {
+  border: 1px solid var(--border-hairline);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-card);
+}
+.field-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 2.4fr;
+  gap: 14px;
+  padding: 13px 18px;
+}
+.field-row + .field-row {
+  border-top: 1px solid var(--border-table-inner);
+}
+.field-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: oklch(0.3 0.018 85);
+}
+.field-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: oklch(0.44 0.018 85);
+}
+.field-desc code {
+  font-size: 13px;
+}
+
+/* ---------- Deploy / closing card ---------- */
+
+.raised-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 20px;
+  padding: clamp(26px, 4vw, 40px);
+  box-shadow:
+    0 1px 2px oklch(0.3 0.02 85 / 0.04),
+    0 30px 70px -60px oklch(0.3 0.02 85 / 0.5);
+}
+.raised-card .h2 {
+  font-size: clamp(22px, 2.8vw, 28px);
+}
+.raised-card .body-text {
+  max-width: 58ch;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.pill-dark {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: 11px;
+  background: var(--ink-primary);
+  color: var(--bg-page);
+  transition: background 0.15s;
+}
+.pill-dark:hover {
+  background: oklch(0.3 0.02 85);
+  color: var(--bg-page);
+}
+.pill-outline {
+  font-size: 15px;
+  padding: 12px 18px;
+  border-radius: 11px;
+  border: 1px solid var(--border-button);
+  color: oklch(0.35 0.018 85);
+  transition: border-color 0.15s;
+}
+.pill-outline:hover {
+  border-color: var(--accent-green);
+  color: oklch(0.35 0.018 85);
+}
+
+/* ---------- Responsive: a <details> disclosure below ~640px ---------- */
+
+.sidebar-disclosure summary {
+  list-style: none;
   cursor: default;
 }
-.VPSidebar .VPSidebarItem.level-0 > .item > .text {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-text-3);
+.sidebar-disclosure summary::-webkit-details-marker,
+.sidebar-disclosure summary::marker {
+  display: none;
+  content: "";
 }
-.VPSidebar .VPSidebarItem.level-0 .indicator {
+.sidebar-disclosure-caret {
   display: none;
 }
 
-/* Links as pill-shaped rows, matching the reference layout's active-row style */
-.VPSidebar .VPSidebarItem.level-1.is-link > .item {
-  border-radius: 8px;
-  padding-left: 8px;
-  margin: 1px 0;
-  transition: background-color 0.15s ease;
-}
-.VPSidebar .VPSidebarItem.level-1.is-link > .item:hover {
-  background-color: var(--vp-c-default-soft);
-}
-.VPSidebar .VPSidebarItem.level-1 .indicator {
-  display: none;
+@media (max-width: 640px) {
+  .page-columns {
+    flex-direction: column;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+    width: 100%;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .sidebar-disclosure summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sidebar-disclosure-caret {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-muted);
+    transition: transform 0.15s;
+  }
+  .sidebar-disclosure[open] .sidebar-disclosure-caret {
+    transform: rotate(180deg);
+  }
+  .sidebar-groups {
+    padding-top: 8px;
+  }
 }
 
-/* The scroll-spy "current section" pill */
-.VPSidebar .VPSidebarItem.level-1.is-link > .item.is-current-anchor {
-  background-color: var(--vp-c-brand-soft);
-}
-.VPSidebar .VPSidebarItem.level-1.is-link > .item.is-current-anchor .text {
-  color: var(--vp-c-brand-1);
-  font-weight: 600;
+@media (min-width: 641px) {
+  /* Always expanded on desktop; clicking the brand row does nothing. */
+  .sidebar-disclosure summary {
+    pointer-events: none;
+  }
 }
