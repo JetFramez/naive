@@ -1,6 +1,6 @@
 {
   "name": "@jetframez/notio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A TypeScript web framework on Express 5: a typed router, per-request context, unified errors, hooks, logging, config, and optional modules for auth, uploads, rate limiting, and OpenAPI.",
   "type": "module",
   "license": "MIT",
