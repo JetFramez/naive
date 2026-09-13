@@ -65,6 +65,16 @@ npm stage approve <id>          # publishes it — prompts for 2FA, cannot be sc
 
 This is a deliberate, permanent step, not a one-time setup task — every release needs it. `npm stage reject <id>` discards a staged version instead of publishing it. Needs npm CLI ≥ 11.15.0 locally (`npm install -g npm@latest` if `npm stage` isn't found).
 
+**The very first publish of the package** is the one exception: `npm stage publish` only stages a new version of a package that already exists on the registry, so it can't create `@jetframez/notio` for the first time — that one has to be a real, manual, 2FA-verified publish. Do it with `pnpm publish`, not `npm publish`: this package's dependencies use pnpm's `catalog:` workspace protocol, which plain `npm publish`/`npm pack` doesn't understand and would publish literally, breaking the package for every installer. `pnpm publish` (and `pnpm pack`, which `release.yml` uses for every subsequent staged release) resolves it to real version numbers first.
+
+```sh
+cd packages/notio
+pnpm build
+pnpm publish --no-git-checks --no-provenance --otp=<code>
+```
+
+(`--no-provenance` because provenance attestations can only be generated on a supported CI runner, never from a local machine, regardless of which tool does the publishing.)
+
 ## Docs site
 
 Live at <https://jetframez.github.io/notio/>. A push to `main` that touches `docs/` builds and deploys it automatically via the `deploy-docs.yml` workflow (GitHub Pages, GitHub Actions as the build source). Trigger a rebuild without a code change from the Actions tab: "Deploy docs" → "Run workflow".
