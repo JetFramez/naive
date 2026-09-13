@@ -66,7 +66,18 @@ jobs:
             echo "package.json version $current is already on the registry; nothing to stage"
           else
             echo "staging $current (registry currently has ${published:-nothing})"
-            npm stage publish
+            # `pnpm pack` resolves this package's catalog:/workspace: protocol
+            # dependencies to real semver ranges. `npm stage publish` (like
+            # plain `npm publish`) has no idea what those pnpm-specific
+            # protocols mean and would stage a package.json with literal
+            # "catalog:" strings as dependency versions — uninstallable by
+            # anyone. Pack first, then stage that exact tarball, rather than
+            # letting `npm stage publish` pack the raw (unresolved) directory
+            # itself.
+            pnpm pack --json > pack-output.json
+            tarball=$(node -p "require('./pack-output.json').filename")
+            npm stage publish "./$tarball"
+            rm -f pack-output.json "$tarball"
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
