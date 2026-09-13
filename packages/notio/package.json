@@ -12,6 +12,19 @@
     "router",
     "openapi"
   ],
+  "homepage": "https://jetframez.github.io/notio/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JetFramez/notio.git",
+    "directory": "packages/notio"
+  },
+  "bugs": {
+    "url": "https://github.com/JetFramez/notio/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
