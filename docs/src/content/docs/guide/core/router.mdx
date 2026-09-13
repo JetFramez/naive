@@ -24,7 +24,7 @@ orders
   });
 ```
 
-This page covers the type layer: declaring params, schemas, statics and redirects, and what the router records about each route. For middleware and narrowing, see [Middleware](/guide/core/middleware). For what a handler's return value turns into, see [Responses](/guide/core/responses).
+This page covers the type layer: declaring params, schemas, statics and redirects, and what the router records about each route. For middleware and narrowing, see [Middleware](../middleware/). For what a handler's return value turns into, see [Responses](../responses/).
 
 ## Path params
 
@@ -91,7 +91,7 @@ router.post("/a").body(type({ name: "string" }));
 
 ## Documentation on a route
 
-These are picked up by the [OpenAPI module](/guide/modules/openapi) and are otherwise inert at runtime — safe to add incrementally.
+These are picked up by the [OpenAPI module](../../modules/openapi/) and are otherwise inert at runtime — safe to add incrementally.
 
 ```ts
 router
@@ -127,7 +127,7 @@ Validation runs after router and group middleware and before route middleware, i
 - A single query value is promoted to a one-element array when the schema wants an array, so `?tags=a` and `?tags=a&tags=b` both validate against `z.array(z.string())`.
 - Unknown keys follow the schema's own policy. Zod and Valibot strip them by default; use `.strict()` to reject.
 - Header names are lower-case. After validation `ctx.headers.all()` returns the validated object; `ctx.headers.get()` always reads the raw request.
-- The body is whatever the body parser put on `req.body`. `createApp` always installs a JSON parser; urlencoded parsing is off by default (`body.urlencoded` in [createApp](/guide/core/app#options)). On bare Express, install `express.json()` yourself — see [Using notio in an existing Express app](/guide/getting-started/existing-express).
+- The body is whatever the body parser put on `req.body`. `createApp` always installs a JSON parser; urlencoded parsing is off by default (`body.urlencoded` in [createApp](../app/#options)). On bare Express, install `express.json()` yourself — see [Using notio in an existing Express app](../../getting-started/existing-express/).
 
 ## Statics and redirects
 
@@ -146,7 +146,7 @@ Both inherit the router's prefix and middleware. `maxAge` accepts a duration str
 
 Router-level `use()` applies to routes registered after it, as in Express. Groups copy the parent's middleware at creation; mounts copy it at mount time.
 
-`app.routes()` returns the same `RouteInfo[]` for every router mounted on an app, with mount prefixes applied — that is what the [OpenAPI module](/guide/modules/openapi) reads.
+`app.routes()` returns the same `RouteInfo[]` for every router mounted on an app, with mount prefixes applied — that is what the [OpenAPI module](../../modules/openapi/) reads.
 
 ## `Router` is Express middleware
 

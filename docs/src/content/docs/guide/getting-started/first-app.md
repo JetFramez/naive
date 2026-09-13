@@ -2,7 +2,7 @@
 title: Your first app
 ---
 
-This walks through the `minimal` example in the repository, one piece at a time. The full file is runnable as-is; see [Examples](/examples) to run it.
+This walks through the `minimal` example in the repository, one piece at a time. The full file is runnable as-is; see [Examples](../../../examples/) to run it.
 
 ## A router
 
@@ -31,7 +31,7 @@ orders
   });
 ```
 
-Nothing here mentions the response. Returning a plain value is enough; the router decides the status and content type from what you return, and from the HTTP method. See [Responses](/guide/core/responses).
+Nothing here mentions the response. Returning a plain value is enough; the router decides the status and content type from what you return, and from the HTTP method. See [Responses](../../core/responses/).
 
 ## An error
 
@@ -92,6 +92,6 @@ curl -X POST http://localhost:3000/orders \
 
 ## Next
 
-- [How a request flows](/guide/getting-started/request-flow) walks through what `createApp` and the router actually do, in order, for every request.
-- [Router](/guide/core/router) covers path params, schemas, and typed narrowing in full.
-- [Using notio in an existing Express app](/guide/getting-started/existing-express) if you are adding this to something that already exists.
+- [How a request flows](../request-flow/) walks through what `createApp` and the router actually do, in order, for every request.
+- [Router](../../core/router/) covers path params, schemas, and typed narrowing in full.
+- [Using notio in an existing Express app](../existing-express/) if you are adding this to something that already exists.

@@ -2,7 +2,7 @@
 title: Error codes
 ---
 
-Every error notio's error handler renders carries a `status` and a `code` in the unified envelope — see [Errors](/guide/core/errors). This page lists every code notio itself can produce, across the core and every module. A code your own application throws (via `defineError` or `map`) is not listed here; it is whatever you named it.
+Every error notio's error handler renders carries a `status` and a `code` in the unified envelope — see [Errors](../../guide/core/errors/). This page lists every code notio itself can produce, across the core and every module. A code your own application throws (via `defineError` or `map`) is not listed here; it is whatever you named it.
 
 ## From the `HttpError` family
 
@@ -38,7 +38,7 @@ A failing `.uploads()` field renders as `VALIDATION` (422) with `details.in` set
 | `UNEXPECTED_FILE` | A file field was not declared in `.uploads()`. |
 | `TOTAL_SIZE_EXCEEDED` | The request's combined file size exceeded `maxTotalSize`. Reported alone, not alongside other issues. |
 
-See [Uploads](/guide/modules/upload#issues) for the full shape and for customising messages per code.
+See [Uploads](../../guide/modules/upload/#issues) for the full shape and for customising messages per code.
 
 ## Schema validation issues
 
@@ -46,4 +46,4 @@ For `.params()`, `.query()`, `.headers()` and `.body()`, the `VALIDATION` envelo
 
 ## Not wire errors
 
-`ConfigError` (from `defineConfig`) and the various "adapter is missing required methods" errors from `createAuth()` are thrown at startup, before any request is served — they never reach the error handler and carry no `code` in the wire sense. See [Config](/guide/core/config#errors-at-boot) and [Auth](/guide/modules/auth#the-adapter).
+`ConfigError` (from `defineConfig`) and the various "adapter is missing required methods" errors from `createAuth()` are thrown at startup, before any request is served — they never reach the error handler and carry no `code` in the wire sense. See [Config](../../guide/core/config/#errors-at-boot) and [Auth](../../guide/modules/auth/#the-adapter).

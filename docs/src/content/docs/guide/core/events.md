@@ -43,4 +43,4 @@ events.onError(({ name, id, error }) => reporter.capture(error, { event: name, i
 
 `on` and `once` return an unsubscribe function; `off(name, listener)` removes by reference, including listeners registered with `once`. Patterns use `*` to match any characters, so `"order.*"` matches `order.placed` and `"*"` matches everything.
 
-There is no outbox, queue or persistence; events are lost if the process dies before listeners run. Use `emitAndWait` when the side effect must complete before the response — see [What notio does not do](/guide/about/scope) for the reasoning.
+There is no outbox, queue or persistence; events are lost if the process dies before listeners run. Use `emitAndWait` when the side effect must complete before the response — see [What notio does not do](../../about/scope/) for the reasoning.

@@ -31,9 +31,9 @@ router.post("/orders/:id/notes").body(NoteSchema).handle(async (ctx) => {
 | `log` | A child logger carrying `requestId`, `route` and anything bound with `ctx.bind(fields)`. |
 | `kind` | `"http"`. Job and CLI contexts created with `runWithCtx` have their own kind. |
 
-`bearer()` returns the bearer token or `undefined`. `accepts(...types)` wraps `req.accepts`. `bind(fields)` adds fields to every subsequent `ctx.log` line for the rest of the request — see [Logging: ambient context](/guide/core/logging#ambient-context).
+`bearer()` returns the bearer token or `undefined`. `accepts(...types)` wraps `req.accepts`. `bind(fields)` adds fields to every subsequent `ctx.log` line for the rest of the request — see [Logging: ambient context](../logging/#ambient-context).
 
-`ctx.status(code)` and `ctx.set(name, value)` are chainable mutators for plain return values. When a handler returns a descriptor, the descriptor's status and headers win. See [Responses](/guide/core/responses) for the full set of return conventions, including `ctx.json()` and the other descriptor factories.
+`ctx.status(code)` and `ctx.set(name, value)` are chainable mutators for plain return values. When a handler returns a descriptor, the descriptor's status and headers win. See [Responses](../responses/) for the full set of return conventions, including `ctx.json()` and the other descriptor factories.
 
 ## Cookies
 
@@ -62,8 +62,8 @@ declare module "@jetframez/notio" {
 }
 ```
 
-For fields a specific middleware adds, prefer `Middleware<{ user: User }>`, which narrows `ctx` for everything after it in the chain instead of making the field optional everywhere — see [Middleware](/guide/core/middleware#ctx-middleware-and-narrowing).
+For fields a specific middleware adds, prefer `Middleware<{ user: User }>`, which narrows `ctx` for everything after it in the chain instead of making the field optional everywhere — see [Middleware](../middleware/#ctx-middleware-and-narrowing).
 
 ## Durations
 
-Wherever notio takes a time (`maxAge`, TTLs, windows, deadlines) it accepts milliseconds as a number or a duration string: `"250ms"`, `"5s"`, `"5m"`, `"1.5h"`, `"30d"`, `"2w"`. Full grammar and byte-size strings (`"10mb"`) are in the [reference](/reference/durations-and-sizes).
+Wherever notio takes a time (`maxAge`, TTLs, windows, deadlines) it accepts milliseconds as a number or a duration string: `"250ms"`, `"5s"`, `"5m"`, `"1.5h"`, `"30d"`, `"2w"`. Full grammar and byte-size strings (`"10mb"`) are in the [reference](../../../reference/durations-and-sizes/).

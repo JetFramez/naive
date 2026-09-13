@@ -54,3 +54,7 @@ Node ≥ 22, pnpm 12.
 ## Releasing
 
 Describe a change with `pnpm changeset` (only `@jetframez/notio` is ever versioned; the internal packages are excluded). Pushing to `main` with pending changesets opens a "Version Packages" PR via the `release.yml` workflow; merging it publishes to npm, given an `NPM_TOKEN` repository secret with publish rights.
+
+## Docs site
+
+Live at <https://jetframez.github.io/notio/>. A push to `main` that touches `docs/` builds and deploys it automatically via the `deploy-docs.yml` workflow (GitHub Pages, GitHub Actions as the build source). Trigger a rebuild without a code change from the Actions tab: "Deploy docs" → "Run workflow".

@@ -6,7 +6,7 @@ title: Using notio in an existing Express app
 
 ## The minimum: context and a router
 
-`context()` is what `createApp` installs internally: it creates `ctx`, enters the `AsyncLocalStorage` for [ambient context](/guide/core/logging#ambient-context), and writes the one-line-per-request log. Install it before any router.
+`context()` is what `createApp` installs internally: it creates `ctx`, enters the `AsyncLocalStorage` for [ambient context](../../core/logging/#ambient-context), and writes the one-line-per-request log. Install it before any router.
 
 ```ts
 import express from "express";
@@ -42,7 +42,7 @@ app.use(notFound());
 app.use(errorHandler({ expose: process.env.NODE_ENV !== "production" }));
 ```
 
-See [Errors](/guide/core/errors) for `map`, `format`, and how classification works.
+See [Errors](../../core/errors/) for `map`, `format`, and how classification works.
 
 ## Hooks
 
@@ -60,7 +60,7 @@ hooks(app, {
 app.use(orders);
 ```
 
-Call `hooks()` or `context()` once, before routes — not both. See [Hooks](/guide/core/hooks) for ordering and the once-per-error guarantee.
+Call `hooks()` or `context()` once, before routes — not both. See [Hooks](../../core/hooks/) for ordering and the once-per-error guarantee.
 
 ## Mixing plain Express routes and notio routers
 
@@ -76,4 +76,4 @@ A plain Express route that throws still reaches the notio error handler if one i
 
 ## Moving to `createApp` later
 
-`createApp` is `context()` + body parsers + health routes + `errorHandler()` + graceful shutdown, registered in the order in [How a request flows](/guide/getting-started/request-flow). None of the code above changes when you switch — `app.mount(orders)` replaces `app.use(orders)`, and the manual `notFound()`/`errorHandler()` calls go away because `createApp` installs them for you.
+`createApp` is `context()` + body parsers + health routes + `errorHandler()` + graceful shutdown, registered in the order in [How a request flows](../request-flow/). None of the code above changes when you switch — `app.mount(orders)` replaces `app.use(orders)`, and the manual `notFound()`/`errorHandler()` calls go away because `createApp` installs them for you.

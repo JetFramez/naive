@@ -2,7 +2,7 @@
 title: Testing
 ---
 
-notio ships no test client — see [What notio does not do](/guide/about/scope). Testing a notio app is testing an Express app: start it on an ephemeral port and make real requests. This is the same pattern the framework's own test suite uses.
+notio ships no test client — see [What notio does not do](../../about/scope/). Testing a notio app is testing an Express app: start it on an ephemeral port and make real requests. This is the same pattern the framework's own test suite uses.
 
 ## Starting and stopping the app
 
@@ -80,7 +80,7 @@ const config = defineConfig({
 });
 ```
 
-See [Config: where values come from](/guide/core/config#where-values-come-from) for the full precedence order.
+See [Config: where values come from](../../core/config/#where-values-come-from) for the full precedence order.
 
 ## Testing thrown errors and validation
 

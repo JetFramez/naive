@@ -11,7 +11,7 @@ Two runnable apps live in the repository's `examples/` directory, type-checked i
 
 ## minimal
 
-The smallest useful notio app: one router, a validated body, a thrown error rendered in the unified shape. Start here if you haven't read [Your first app](/guide/getting-started/first-app) yet — this is the same code, in full.
+The smallest useful notio app: one router, a validated body, a thrown error rendered in the unified shape. Start here if you haven't read [Your first app](../guide/getting-started/first-app/) yet — this is the same code, in full.
 
 ### A route with no schema, and a thrown error
 
@@ -42,7 +42,7 @@ Full source: [`examples/minimal/src/index.ts`](https://github.com/jetframez/noti
 
 ## auth-drizzle
 
-`@jetframez/notio/auth` wired to a real database: an `AuthAdapter` implemented on Drizzle ORM against SQLite, backing signup, login, `GET /me`, and logout. Read [Auth](/guide/modules/auth) alongside this for what each piece means.
+`@jetframez/notio/auth` wired to a real database: an `AuthAdapter` implemented on Drizzle ORM against SQLite, backing signup, login, `GET /me`, and logout. Read [Auth](../guide/modules/auth/) alongside this for what each piece means.
 
 ### The adapter
 
@@ -66,7 +66,7 @@ Hashes the password, creates the user, then calls `auth.login()` to set the sess
 
 ### Login
 
-`auth.verifyPassword()` throws `Unauthorized` on any mismatch — including an unknown email, which it treats identically in both response and timing. See [Auth: passwords](/guide/modules/auth#passwords).
+`auth.verifyPassword()` throws `Unauthorized` on any mismatch — including an unknown email, which it treats identically in both response and timing. See [Auth: passwords](../guide/modules/auth/#passwords).
 
 <RegionCode code={authIndexSource} region="login" title="examples/auth-drizzle/src/index.ts" />
 
@@ -94,4 +94,4 @@ The SQLite file and its tables are created automatically on first run. Full sour
 
 ## What's not covered by an example yet
 
-Neither example touches uploads, rate limiting, OpenAPI, config, events, or cache directly — each of those modules' guide pages has its own complete, runnable-shaped snippet instead. If you're wiring several of these together in one app, the [recipes](/guide/guides/recipes) page has the combinations most likely to trip you up (auth plus rate limiting on a login route, in particular).
+Neither example touches uploads, rate limiting, OpenAPI, config, events, or cache directly — each of those modules' guide pages has its own complete, runnable-shaped snippet instead. If you're wiring several of these together in one app, the [recipes](../guide/guides/recipes/) page has the combinations most likely to trip you up (auth plus rate limiting on a login route, in particular).

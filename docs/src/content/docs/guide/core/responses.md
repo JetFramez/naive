@@ -38,7 +38,7 @@ ctx.empty(status = 204);
 ctx.raw((res) => { /* write to res yourself */ });
 ```
 
-Descriptors are plain objects tagged with a symbol (`isDescriptor()` checks for it), so middleware can return them too — a middleware that returns a descriptor instead of calling `next()` sends the response and skips the rest of the chain, per the four things a middleware may do in [Middleware](/guide/core/middleware#the-chain-mechanically).
+Descriptors are plain objects tagged with a symbol (`isDescriptor()` checks for it), so middleware can return them too — a middleware that returns a descriptor instead of calling `next()` sends the response and skips the rest of the chain, per the four things a middleware may do in [Middleware](../middleware/#the-chain-mechanically).
 
 A descriptor's own status and headers take precedence over `ctx.status()` and `ctx.set()`.
 
@@ -48,4 +48,4 @@ A descriptor's own status and headers take precedence over `ctx.status()` and `c
 
 ## `.response(schema)`
 
-Declaring `.response(schema)` on a route constrains what a handler may return — the schema's output type, or any descriptor. It is checked at runtime outside production and is what the [OpenAPI module](/guide/modules/openapi) reads to document the success response. See [Router: Schemas](/guide/core/router#schemas-query-body-headers-response).
+Declaring `.response(schema)` on a route constrains what a handler may return — the schema's output type, or any descriptor. It is checked at runtime outside production and is what the [OpenAPI module](../../modules/openapi/) reads to document the success response. See [Router: Schemas](../router/#schemas-query-body-headers-response).

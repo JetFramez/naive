@@ -18,7 +18,7 @@ router.get("/orders").query(PageQuery).handle(async (ctx) => {
 });
 ```
 
-`z.coerce.number()` is required — query values always arrive as strings. See [Router: schemas](/guide/core/router#schemas-query-body-headers-response).
+`z.coerce.number()` is required — query values always arrive as strings. See [Router: schemas](../../core/router/#schemas-query-body-headers-response).
 
 ## Auth plus rate limiting on a login route
 
@@ -36,7 +36,7 @@ router
   });
 ```
 
-See [Rate limiting](/guide/modules/rate-limit) and [Auth: passwords](/guide/modules/auth#passwords).
+See [Rate limiting](../../modules/rate-limit/) and [Auth: passwords](../../modules/auth/#passwords).
 
 ## Uploading a file to S3
 
@@ -54,7 +54,7 @@ router
   });
 ```
 
-See [Uploads: `UploadedFile`](/guide/modules/upload#uploadedfile).
+See [Uploads: `UploadedFile`](../../modules/upload/#uploadedfile).
 
 ## Translating database errors into your own codes
 
@@ -67,7 +67,7 @@ app.errors({
 });
 ```
 
-See [Errors: classification](/guide/core/errors#classification).
+See [Errors: classification](../../core/errors/#classification).
 
 ## Tenant scoping with ambient context
 
@@ -91,7 +91,7 @@ function currentTenantId(): string {
 }
 ```
 
-See [Context: augmenting `Ctx`](/guide/core/ctx#augmenting-ctx) and [Logging: ambient context](/guide/core/logging#ambient-context).
+See [Context: augmenting `Ctx`](../../core/ctx/#augmenting-ctx) and [Logging: ambient context](../../core/logging/#ambient-context).
 
 ## Publishing the OpenAPI spec in CI
 
@@ -107,4 +107,4 @@ const spec = openapi({ info: { title: "Shop API", version: "1.0.0" } }).from(app
 writeFileSync("openapi.json", JSON.stringify(spec.document, null, 2));
 ```
 
-Run this as a CI step to diff the committed spec against what the code actually produces, or to feed a separate client-generation tool. See [OpenAPI](/guide/modules/openapi).
+Run this as a CI step to diff the committed spec against what the code actually produces, or to feed a separate client-generation tool. See [OpenAPI](../../modules/openapi/).

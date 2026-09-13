@@ -96,4 +96,4 @@ Cleanup deletes every accepted file's temp copy once the response finishes or th
 
 ## No storage backend, by design
 
-The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step — notio owns the multipart parsing and validation, and you own where the bytes end up. See [Design principles: own the interface, borrow the engine](/guide/about/principles#own-the-interface-borrow-the-engine).
+The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step — notio owns the multipart parsing and validation, and you own where the bytes end up. See [Design principles: own the interface, borrow the engine](../../about/principles/#own-the-interface-borrow-the-engine).

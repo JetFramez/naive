@@ -2,7 +2,7 @@
 title: Middleware
 ---
 
-A route's chain is router middleware, then group middleware, then route middleware, then validation, then the handler — see [How a request flows](/guide/getting-started/request-flow) for where this sits relative to everything else. This page covers writing middleware, narrowing `ctx`, and mixing in the Express ecosystem.
+A route's chain is router middleware, then group middleware, then route middleware, then validation, then the handler — see [How a request flows](../../getting-started/request-flow/) for where this sits relative to everything else. This page covers writing middleware, narrowing `ctx`, and mixing in the Express ecosystem.
 
 ## `ctx` middleware and narrowing
 
@@ -38,7 +38,7 @@ router.use(guard((ctx) => ctx.user.role === "admin", () => new Forbidden()));
 
 ### Augmenting `Ctx` globally instead
 
-`Middleware<Adds>` narrows for what comes after it in one chain. For a field every request carries regardless of which middleware ran, merge into the `Ctx` interface instead — see [Context: Augmenting `Ctx`](/guide/core/ctx#augmenting-ctx). Prefer `Middleware<Adds>` whenever the field is actually conditional on a specific middleware running, since a global augmentation makes the field optional everywhere, even on routes that never run that middleware.
+`Middleware<Adds>` narrows for what comes after it in one chain. For a field every request carries regardless of which middleware ran, merge into the `Ctx` interface instead — see [Context: Augmenting `Ctx`](../ctx/#augmenting-ctx). Prefer `Middleware<Adds>` whenever the field is actually conditional on a specific middleware running, since a global augmentation makes the field optional everywhere, even on routes that never run that middleware.
 
 ## Express middleware
 
@@ -68,7 +68,7 @@ router.use(async (ctx, next) => {
 
 A `ctx` middleware must do one of four things: call `next()`, throw, respond through `ctx.res`, or return a response descriptor without calling `next()`. Doing none of them raises `Internal("middleware ended without responding or calling next()")`.
 
-Errors are thrown, never passed to `next(err)`. The router catches them and forwards them to Express's error path, where the notio error handler (or your own) renders them — see [Errors](/guide/core/errors).
+Errors are thrown, never passed to `next(err)`. The router catches them and forwards them to Express's error path, where the notio error handler (or your own) renders them — see [Errors](../errors/).
 
 Express middleware in the chain keeps Express semantics: `next()` continues, `next(err)` becomes a thrown error, `next("route")` skips to the next matching route, and ending the response without calling `next()` stops the chain. A four-argument `(err, req, res, next)` handler sees errors thrown by anything after it in the chain.
 
@@ -76,4 +76,4 @@ Express middleware in the chain keeps Express semantics: `next()` continues, `ne
 
 ## Middleware at app level
 
-`app.use()` on `createApp` accepts both shapes mixed freely, exactly like a router. The difference is scope: app-level middleware runs for every request, including ones no route matches, which is why `cors()`, `helmet()` and similar belong there rather than on a router. See [createApp: Middleware at app level](/guide/core/app#middleware-at-app-level).
+`app.use()` on `createApp` accepts both shapes mixed freely, exactly like a router. The difference is scope: app-level middleware runs for every request, including ones no route matches, which is why `cors()`, `helmet()` and similar belong there rather than on a router. See [createApp: Middleware at app level](../app/#middleware-at-app-level).

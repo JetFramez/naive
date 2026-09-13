@@ -32,4 +32,4 @@ A throwing `onRequest` hook fails the request: the error goes to the error handl
 
 ## On a bare Express app
 
-`hooks(app, { onRequest, onResponse, onError })` installs the same context middleware `createApp` uses, plus these app-level hooks — call it once, before routes. See [Using notio in an existing Express app](/guide/getting-started/existing-express#hooks) for the full example. Calling it more than once adds more hooks; each request still gets one context.
+`hooks(app, { onRequest, onResponse, onError })` installs the same context middleware `createApp` uses, plus these app-level hooks — call it once, before routes. See [Using notio in an existing Express app](../../getting-started/existing-express/#hooks) for the full example. Calling it more than once adds more hooks; each request still gets one context.
