@@ -69,24 +69,5 @@
   "optionalDependencies": {
     "@keyv/redis": "^5.1.6",
     "@node-rs/argon2": "^2.2.1"
-  },
-  "devDependencies": {
-    "@notio-internal/auth": "0.0.0",
-    "@notio-internal/core": "0.0.0",
-    "@notio-internal/openapi": "0.0.0",
-    "@notio-internal/rate-limit": "0.0.0",
-    "@notio-internal/upload": "0.0.0",
-    "@types/express": "^5.0.6",
-    "@types/node": "^22.20.2",
-    "tsdown": "^0.23.0",
-    "typescript": "~5.9.3",
-    "vitest": "^4.1.11",
-    "zod": "^4.6.2"
-  },
-  "scripts": {
-    "build": "tsdown",
-    "verify": "node scripts/verify-build.mjs",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
   }
 }
