@@ -53,7 +53,17 @@ Node ≥ 22, pnpm 12.
 
 ## Releasing
 
-Describe a change with `pnpm changeset` (only `@jetframez/notio` is ever versioned; the internal packages are excluded). Pushing to `main` with pending changesets opens a "Version Packages" PR via the `release.yml` workflow; merging it publishes to npm, given an `NPM_TOKEN` repository secret with publish rights.
+Describe a change with `pnpm changeset` (only `@jetframez/notio` is ever versioned; the internal packages are excluded). Pushing to `main` with pending changesets opens a "Version Packages" PR via the `release.yml` workflow.
+
+Merging that PR does **not** publish by itself. `NPM_TOKEN` is a stage-only granular token — npm is retiring tokens that can publish directly (see [Trusted publishing for npm packages](https://docs.npmjs.com/trusted-publishers/)), and `changeset publish` has no native support yet for npm's staged-publish flow ([changesets/changesets#2025](https://github.com/changesets/changesets/issues/2025)). So the merge only stages the new version on the registry, not public yet. To finish the release, a maintainer runs, locally, with their own npm login:
+
+```sh
+npm stage list                # find the staged version's id
+npm stage view <id>            # optional: inspect what's about to go live
+npm stage approve <id>          # publishes it — prompts for 2FA, cannot be scripted
+```
+
+This is a deliberate, permanent step, not a one-time setup task — every release needs it. `npm stage reject <id>` discards a staged version instead of publishing it. Needs npm CLI ≥ 11.15.0 locally (`npm install -g npm@latest` if `npm stage` isn't found).
 
 ## Docs site
 

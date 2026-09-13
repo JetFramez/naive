@@ -30,13 +30,43 @@ jobs:
 
       - run: pnpm build
 
-      # Opens or updates a "Version Packages" PR when changesets are pending;
-      # once that PR merges (bumping @jetframez/notio's version), this same
-      # step publishes the release. Needs an NPM_TOKEN repo secret with
-      # publish rights for @jetframez/notio; the job is a no-op without one.
-      - uses: changesets/action@v1
-        with:
-          publish: pnpm changeset publish
+      # `npm stage` needs a CLI newer than what Node 22 bundles (it landed
+      # in npm 11.15.0; Node 22 ships 10.x). Needed below regardless of
+      # whether this run ends up staging anything.
+      - run: npm install -g npm@latest
+
+      # Versioning and changelogs only — deliberately no `publish` input.
+      # NPM_TOKEN is a stage-only granular token: npm is retiring
+      # direct-publish tokens (docs.npmjs.com/trusted-publishers), and
+      # `changeset publish` always shells out to a plain `npm publish`,
+      # which a stage-only token cannot do. changesets/changesets#2025
+      # tracks native support for staged publishing; there isn't any yet,
+      # hence the separate step below. This step only opens or updates the
+      # "Version Packages" PR when changesets are pending.
+      - name: Version packages
+        id: changesets
+        uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Runs on the push right after a "Version Packages" PR merges: no
+      # changesets are pending anymore, and packages/notio/package.json
+      # carries a version not yet on the registry. Stages it — NOT public
+      # yet. A maintainer must run, locally:
+      #   npm stage list                     (find the staged id)
+      #   npm stage approve <id>              (requires 2FA — see README)
+      # before the release is actually live. See README.md#releasing.
+      - name: Stage the release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        working-directory: packages/notio
+        run: |
+          current=$(node -p "require('./package.json').version")
+          published=$(npm view @jetframez/notio version 2>/dev/null || echo "none")
+          if [ "$current" = "$published" ]; then
+            echo "package.json version $current is already on the registry; nothing to stage"
+          else
+            echo "staging $current (registry currently has ${published:-nothing})"
+            npm stage publish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
