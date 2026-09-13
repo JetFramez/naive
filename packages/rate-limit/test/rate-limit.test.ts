@@ -7,7 +7,7 @@ import { withApp } from "./helpers/http.js";
 
 describe("rateLimit()", () => {
   it("sets RateLimit-* headers on every response and 429s once exceeded", async () => {
-    const router = new Router().use(rateLimit({ limit: 2, window: "200ms" }));
+    const router = new Router().use(rateLimit({ limit: 2, window: "5s" }));
     router.get("/x").handle(() => "ok");
     await withApp(
       (app) => app.mount(router),
@@ -29,7 +29,7 @@ describe("rateLimit()", () => {
         expect(body.code).toBe("RATE_LIMITED");
         expect(body.details).toMatchObject({
           limit: 2,
-          window: 200,
+          window: 5000,
           retryAfter: expect.any(Number),
         });
       },
