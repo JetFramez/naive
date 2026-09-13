@@ -1,4 +1,6 @@
-# OpenAPI
+---
+title: OpenAPI
+---
 
 `@jetframez/notio/openapi` walks `routes()` into an OpenAPI 3.1 document and serves it with a Scalar UI. No code generation — this module only produces the spec.
 
@@ -94,4 +96,4 @@ Applied to every schema built from `.response()`, documentation only — it has 
 
 - OpenAPI has no concept of an optional path segment. A route declared with `{...}` groups (`/users{/:id}`) is documented with the parameter always present, since there's no way to express "this segment might not be here" in the spec.
 - Query and header parameters are only documented when a schema declares their shape; an undeclared `.query()`/`.headers()` means nothing to list.
-- No code generation. `spec.document` is a plain JSON-serializable object — everything else (a CLI export, a generated client) is out of scope for this phase.
+- No code generation. `spec.document` is a plain JSON-serializable object — a CLI export or a generated client is out of scope; see [What notio does not do](../../about/scope/).

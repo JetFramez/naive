@@ -1,0 +1,37 @@
+---
+/**
+ * Renders one `// #region name` … `// #endregion name` slice of a source
+ * file as a code block, so the docs quote the real file directly instead of
+ * a hand-copied snippet that can drift out of sync with it. Import the
+ * source with a `?raw` suffix and pass the resulting string as `code`.
+ */
+import { Code } from "@astrojs/starlight/components";
+
+interface Props {
+  code: string;
+  region: string;
+  title: string;
+  lang?: string;
+}
+
+const { code, region, title, lang = "ts" } = Astro.props;
+
+const lines = code.split("\n");
+const startIndex = lines.findIndex((line) => line.includes(`#region ${region}`));
+const endIndex = lines.findIndex((line) => line.includes(`#endregion ${region}`));
+if (startIndex === -1 || endIndex === -1) {
+  throw new Error(`RegionCode: region "${region}" not found in ${title}`);
+}
+
+const body = lines.slice(startIndex + 1, endIndex);
+const indents = body
+  .filter((line) => line.trim().length > 0)
+  .map((line) => line.match(/^\s*/)?.[0].length ?? 0);
+const minIndent = indents.length > 0 ? Math.min(...indents) : 0;
+const snippet = body
+  .map((line) => line.slice(minIndent))
+  .join("\n")
+  .replace(/\n+$/, "");
+---
+
+<Code code={snippet} lang={lang} title={title} />

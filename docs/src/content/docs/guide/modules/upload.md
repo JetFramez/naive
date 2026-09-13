@@ -1,4 +1,6 @@
-# Uploads
+---
+title: Uploads
+---
 
 `@jetframez/notio/upload` handles `multipart/form-data`: files stream to a temp directory (or stay in memory below a threshold), their type is detected from content rather than trusted from the client, and text fields validate through the ordinary `.body()` schema.
 
@@ -92,6 +94,6 @@ interface UploadedFile {
 
 Cleanup deletes every accepted file's temp copy once the response finishes or the connection closes, and removes the now-empty request directory. `move()` relocates the file (across devices if needed) and is exempt from cleanup; `keep()` leaves the file where it is, also exempt; `discard()` deletes it immediately. Files that failed validation are deleted as soon as they are rejected, not held until the end of the request.
 
-## Redis-free by design
+## No storage backend, by design
 
-The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step, matching the brief's "own the interface, borrow the engine" principle: notio owns the multipart parsing and validation, and you own where the bytes end up.
+The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step — notio owns the multipart parsing and validation, and you own where the bytes end up. See [Design principles: own the interface, borrow the engine](../../about/principles/#own-the-interface-borrow-the-engine).

@@ -1,0 +1,87 @@
+---
+title: notio
+description: A TypeScript web framework on Express 5.
+template: splash
+hero:
+  title: notio
+  tagline: Keep Express as the transport and get a typed router, a per-request context, unified errors, and optional modules for auth, uploads, rate limiting, and OpenAPI — all fully typed, none of it hidden behind magic.
+  actions:
+    - text: Get started
+      link: guide/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: Examples
+      link: examples/
+      icon: external
+      variant: minimal
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+## A first route
+
+```ts
+import { createApp, NotFound, Router } from "@jetframez/notio";
+import { z } from "zod";
+
+const orders = new Router("/orders");
+
+orders.get("/:id").handle((ctx) => {
+  const order = db.orders.get(ctx.params.id); //   ctx.params.id: string, inferred from ":id"
+  if (!order) throw new NotFound(`Order ${ctx.params.id} does not exist`);
+  return order; // -> 200 JSON
+});
+
+orders
+  .post("/")
+  .body(z.object({ total: z.number().positive() }))
+  .handle((ctx) => db.orders.create({ total: ctx.body.total })); //   ctx.body.total: number, validated
+  // -> 201 JSON
+
+const app = createApp();
+app.mount(orders);
+await app.listen(3000);
+```
+
+Every thrown error and every validation failure renders through the same shape:
+
+```json
+{ "code": "VALIDATION", "message": "Invalid body", "details": { "in": "body", "issues": [] }, "requestId": "…" }
+```
+
+Continue with [Your first app](./guide/getting-started/first-app/) for the full walkthrough.
+
+## Why notio
+
+<CardGrid>
+  <LinkCard
+    title="Express is the transport"
+    description="app.express is always the real Express instance. Any (req, res, next) middleware from the ecosystem works unchanged."
+    href="./guide/getting-started/existing-express/"
+  />
+  <LinkCard
+    title="Typed end to end"
+    description="Path params inferred from the route string, Standard Schema validation for query/body/headers, Middleware<Adds> narrowing across the chain."
+    href="./guide/core/router/"
+  />
+  <LinkCard
+    title="Nothing implicit at boot"
+    description="Modules are constructed by you and passed where needed. Missing config or adapter methods fail at startup, listed together."
+    href="./guide/core/config/"
+  />
+  <LinkCard
+    title="One error shape everywhere"
+    description="Throw an HttpError, a validation failure, or a plain Error — every one renders as the same envelope."
+    href="./guide/core/errors/"
+  />
+  <LinkCard
+    title="Bring your own schema library"
+    description="Zod, Valibot, and ArkType all work through Standard Schema. notio depends on none of them."
+    href="./guide/getting-started/installation/"
+  />
+  <LinkCard
+    title="Optional modules, not a plugin system"
+    description="Auth, uploads, rate limiting, and OpenAPI live at their own subpaths. Import what you use; nothing registers itself."
+    href="./guide/modules/auth/"
+  />
+</CardGrid>

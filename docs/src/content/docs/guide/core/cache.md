@@ -1,4 +1,6 @@
-# Cache
+---
+title: Cache
+---
 
 A small cache API on Keyv. Memory by default; Redis through the optional `@keyv/redis` package.
 

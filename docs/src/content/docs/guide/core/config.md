@@ -1,4 +1,6 @@
-# Config
+---
+title: Config
+---
 
 `defineConfig` resolves configuration once at boot, validates every value, reports all problems together, and returns a frozen, typed object.
 

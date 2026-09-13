@@ -1,4 +1,6 @@
-# Auth
+---
+title: Auth
+---
 
 `@jetframez/notio/auth` is deliberately minimal: strategies, sessions, JWTs, opaque tokens with rotation, and password hashing. There is no OAuth, no magic links, no 2FA, no email verification, no password reset, and no authorization model — build those on top with `currentUser()` and your own logic.
 
@@ -20,7 +22,7 @@ router.get("/orders").use(auth.require("session", "bearer")).handle((ctx) => {
 });
 ```
 
-`User` must have an `id: string`. This is narrower than the brief states verbatim, and is what lets sessions, JWTs and refresh tokens store and look up a user by a single, uniform key.
+`User` must have an `id: string`, which is what lets sessions, JWTs and refresh tokens store and look up a user by a single, uniform key.
 
 ## The adapter
 
