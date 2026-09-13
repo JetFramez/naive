@@ -18,3 +18,52 @@
   --vp-c-brand-3: #0d9488;
   --vp-c-brand-soft: rgba(45, 212, 191, 0.16);
 }
+
+/**
+ * Layout: a grouped left sidebar of in-page anchors (Start / Core /
+ * Modules / …) instead of a two-item page switcher, with the current
+ * section pill-highlighted as you scroll (see theme/index.ts).
+ */
+
+/* Group labels: small, uppercase, muted — not a clickable-looking heading */
+.VPSidebar .VPSidebarItem.level-0 {
+  margin-top: 20px;
+}
+.VPSidebar .VPSidebarItem.level-0 > .item {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  cursor: default;
+}
+.VPSidebar .VPSidebarItem.level-0 > .item > .text {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vp-c-text-3);
+}
+.VPSidebar .VPSidebarItem.level-0 .indicator {
+  display: none;
+}
+
+/* Links as pill-shaped rows, matching the reference layout's active-row style */
+.VPSidebar .VPSidebarItem.level-1.is-link > .item {
+  border-radius: 8px;
+  padding-left: 8px;
+  margin: 1px 0;
+  transition: background-color 0.15s ease;
+}
+.VPSidebar .VPSidebarItem.level-1.is-link > .item:hover {
+  background-color: var(--vp-c-default-soft);
+}
+.VPSidebar .VPSidebarItem.level-1 .indicator {
+  display: none;
+}
+
+/* The scroll-spy "current section" pill */
+.VPSidebar .VPSidebarItem.level-1.is-link > .item.is-current-anchor {
+  background-color: var(--vp-c-brand-soft);
+}
+.VPSidebar .VPSidebarItem.level-1.is-link > .item.is-current-anchor .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
