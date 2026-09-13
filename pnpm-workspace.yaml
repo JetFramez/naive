@@ -38,7 +38,6 @@ catalog:
   "@valibot/to-json-schema": ^1.8.0
   arktype: ^2.2.3
   tsx: ^4.23.13
-  vitepress: ^1.6.4
 
 minimumReleaseAgeExclude:
   - zod@4.6.2

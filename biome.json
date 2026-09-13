@@ -31,8 +31,8 @@
               "**/*.test-d.ts",
               "**/*.config.ts",
               "**/notio/src/**",
-              "**/.vitepress/config.ts",
-              "**/.vitepress/theme/**"
+              "**/astro.config.mjs",
+              "**/docs/src/**"
             ]
           }
         }
@@ -54,6 +54,17 @@
       "linter": {
         "rules": {
           "suspicious": { "noExplicitAny": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
+          }
         }
       }
     }

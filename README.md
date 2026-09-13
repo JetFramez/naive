@@ -30,8 +30,8 @@ packages/upload      @notio-internal/upload   multipart parsing, content-sniffed
 packages/rate-limit  @notio-internal/rate-limit  fixed window, sliding window, token bucket
 packages/openapi     @notio-internal/openapi  OpenAPI 3.1 generation, Scalar docs UI
 packages/notio       @jetframez/notio         published façade; re-exports the above via subpaths, internal packages inlined
-examples/            runnable apps, type-checked in CI, embedded in the docs site
-docs/                VitePress guide site
+examples/            runnable apps, type-checked in CI, walked through in the docs site
+docs/                Starlight (Astro) guide site
 ```
 
 Only `@jetframez/notio` is published; the `@notio-internal/*` packages exist for architectural boundaries (each may only import what its own `package.json` declares) and are inlined into the façade's build output, never installed by consumers.
@@ -46,7 +46,7 @@ pnpm test
 pnpm build
 pnpm --filter @jetframez/notio verify   # confirms the built package has no leftover workspace-package imports
 pnpm --filter minimal start             # run an example
-pnpm --filter notio-docs dev            # docs site at localhost, guide pages under docs/guide
+pnpm --filter notio-docs dev            # docs site at localhost, pages under docs/src/content/docs
 ```
 
 Node ≥ 22, pnpm 12.

@@ -3,11 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
   },
   "devDependencies": {
-    "vitepress": "catalog:"
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/starlight": "^0.42.0",
+    "astro": "^7.3.2",
+    "typescript": "catalog:"
   }
 }
