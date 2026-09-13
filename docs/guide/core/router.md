@@ -1,0 +1,156 @@
+# Router
+
+The router is chainable and typed. You declare a path, optional schemas, then hand it a handler. The router owns the send step: whatever the handler returns becomes the response.
+
+```ts
+import { Router } from "@jetframez/notio";
+import { z } from "zod";
+
+const orders = new Router("/orders");
+
+orders
+  .get("/:id")
+  .params(z.object({ id: z.coerce.number() }))
+  .query(z.object({ expand: z.array(z.string()).optional() }))
+  .summary("Fetch one order")
+  .handle(async (ctx) => {
+    ctx.params.id; // number
+    ctx.query.expand; // string[] | undefined
+    return findOrder(ctx.params.id);
+  });
+```
+
+This page covers the type layer: declaring params, schemas, statics and redirects, and what the router records about each route. For middleware and narrowing, see [Middleware](./middleware). For what a handler's return value turns into, see [Responses](./responses).
+
+## Path params
+
+Parameters are inferred from the path string, including the router prefix and any group prefixes above the route.
+
+| Path | `ctx.params` |
+|---|---|
+| `"/orders/:id/lines/:lineId"` | `{ id: string; lineId: string }` |
+| `"/files/*path"` | `{ path: string }` |
+| `"/files/:name.:ext"` | `{ name: string; ext: string }` |
+| `"/users{/:id}"` | `{ id?: string }` |
+| `"/orders"` | `{}` |
+
+Path syntax follows Express 5 (`path-to-regexp` v8): `:name` and `*name` parameters, `{...}` optional groups. A path typed as plain `string` falls back to `Record<string, string>`.
+
+```ts
+new Router("/orgs/:orgId").group("/projects", (r) => {
+  r.get("/:projectId").handle((ctx) => {
+    ctx.params; // { orgId: string; projectId: string }
+  });
+});
+```
+
+### `.params(schema)`
+
+A params schema must declare exactly the parameters in the path. Anything else is a compile error whose message names the offending keys. The schema may transform values; path values always arrive as strings.
+
+```ts
+orders.get("/:id").params(z.object({ id: z.coerce.number() })); // ctx.params: { id: number }
+orders.get("/:id").params(z.object({ orderId: z.string() }));   // error: missing "id", extra "orderId"
+```
+
+## Schemas: query, body, headers, response
+
+`.query()`, `.body()`, `.headers()` and `.response()` accept any [Standard Schema](https://standardschema.dev) value. Zod, Valibot and ArkType all work; notio has no dependency on any of them.
+
+::: code-group
+
+```ts [Zod]
+router.post("/a").body(z.object({ name: z.string() }));
+```
+
+```ts [Valibot]
+import * as v from "valibot";
+router.post("/a").body(v.object({ name: v.string() }));
+```
+
+```ts [ArkType]
+import { type } from "arktype";
+router.post("/a").body(type({ name: "string" }));
+```
+
+:::
+
+- `.body()` is not offered on `GET`, `DELETE`, `HEAD` or `OPTIONS` routes.
+- Without a schema, `ctx.query` is `Record<string, string | string[]>`, `ctx.body` is `unknown`, and `ctx.headers.all()` is `Record<string, string | string[] | undefined>`.
+- `.response(schema)` constrains what the handler may return: a value of the schema's output type, or a response descriptor from `ctx.json()` and friends. `.response(status, schema)` is documentation only — it does not validate at runtime, but is picked up by the OpenAPI module.
+
+::: tip Response validation runs outside production
+`.response(schema)` validates the return value only when `NODE_ENV !== "production"`, throwing `Internal` on a mismatch — a wrong shape fails loudly in development and costs nothing at runtime in production. Disable it per router with `new Router(prefix, { validateResponses: false })`.
+:::
+
+## Documentation on a route
+
+These are picked up by the [OpenAPI module](/guide/modules/openapi) and are otherwise inert at runtime — safe to add incrementally.
+
+```ts
+router
+  .get("/:id")
+  .summary("Fetch one order")
+  .tags("orders")
+  .response(OrderSchema)
+  .errors(NotFound)
+  .deprecated() // marks the operation deprecated in the generated spec
+  .hidden()     // excludes the route from the generated spec entirely
+  .handle(...);
+```
+
+`.errors(...classes)` lists the `HttpError` subclasses a route can throw, so the OpenAPI module documents their responses alongside `.response()`'s success shape.
+
+## Validation order
+
+Validation runs after router and group middleware and before route middleware, in this order: params, query, headers, uploads, body. Only the first failing section is reported, as `Unprocessable` (422):
+
+```json
+{
+  "code": "VALIDATION",
+  "message": "Invalid body",
+  "details": {
+    "in": "body",
+    "issues": [{ "path": "items.1.qty", "code": "too_small", "message": "..." }]
+  },
+  "requestId": "..."
+}
+```
+
+- Path params and query values arrive as strings; use coercion in the schema (`z.coerce.number()`).
+- A single query value is promoted to a one-element array when the schema wants an array, so `?tags=a` and `?tags=a&tags=b` both validate against `z.array(z.string())`.
+- Unknown keys follow the schema's own policy. Zod and Valibot strip them by default; use `.strict()` to reject.
+- Header names are lower-case. After validation `ctx.headers.all()` returns the validated object; `ctx.headers.get()` always reads the raw request.
+- The body is whatever the body parser put on `req.body`. `createApp` always installs a JSON parser; urlencoded parsing is off by default (`body.urlencoded` in [createApp](./app#options)). On bare Express, install `express.json()` yourself — see [Using notio in an existing Express app](/guide/getting-started/existing-express).
+
+## Statics and redirects
+
+```ts
+router.static("/assets", "./public", { maxAge: "1d", immutable: true });
+router.static("/app", "./dist", { spa: true });   // serves index.html for unmatched GETs that accept HTML
+router.redirect("/old", "/new");                  // 302
+router.redirect("/gone", "/elsewhere", 301);
+```
+
+Both inherit the router's prefix and middleware. `maxAge` accepts a duration string. Everything else is passed to `express.static`.
+
+## Route metadata
+
+`router.routes()` returns every route beneath the router, including groups and mounts, with full paths, parameter names, schemas, the middleware chain (outer to inner) and the documentation fields (`summary`, `tags`, `responses`, `errors`, `deprecated`, `hidden`). `router.statics()` and `router.redirects()` list the rest. Routes are recorded when `.handle()` is called.
+
+Router-level `use()` applies to routes registered after it, as in Express. Groups copy the parent's middleware at creation; mounts copy it at mount time.
+
+`app.routes()` returns the same `RouteInfo[]` for every router mounted on an app, with mount prefixes applied — that is what the [OpenAPI module](/guide/modules/openapi) reads.
+
+## `Router` is Express middleware
+
+A `Router` instance can be used directly on a bare `express()` app, or compiled to a plain `express.Router` with `.express()`:
+
+```ts
+const app = express();
+app.use(express.json());
+app.use(orders);                    // full paths, including the router prefix
+app.use("/v2", orders.express());   // or mount the compiled express.Router yourself
+```
+
+Each route compiles to one Express handler that runs the whole chain: router and group middleware, validation, route middleware, then the handler. Routes registered after the first request are picked up automatically. Because middleware compiles per route, router-level middleware runs only for requests that match one of the router's routes, statics or redirects — put `cors()`, `helmet()` and other "every request" middleware on the app instead, where Express runs it for unmatched paths and preflights too.

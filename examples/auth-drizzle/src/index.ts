@@ -9,6 +9,7 @@ import { users } from "./schema.js";
 const db = createDb(process.env.DATABASE_PATH ?? "auth-drizzle.sqlite");
 const adapter = createDrizzleAdapter(db);
 
+// #region setup
 const auth = createAuth<User>({
   adapter,
   strategies: { session: cookieSession({ ttl: "30d" }) },
@@ -16,7 +17,9 @@ const auth = createAuth<User>({
 });
 
 const router = new Router("/auth");
+// #endregion setup
 
+// #region signup
 router
   .post("/signup")
   .body(
@@ -36,7 +39,9 @@ router
     await auth.login(ctx, user);
     return ctx.status(201).json(user);
   });
+// #endregion signup
 
+// #region login
 router
   .post("/login")
   .body(z.object({ email: z.string().email(), password: z.string() }))
@@ -45,16 +50,19 @@ router
     await auth.login(ctx, user);
     return user;
   });
+// #endregion login
 
 router.post("/logout").handle(async (ctx) => {
   await auth.logout(ctx);
   return ctx.empty();
 });
 
+// #region me
 router
   .get("/me")
   .use(auth.require("session"))
   .handle((ctx) => ctx.user);
+// #endregion me
 
 const app = createApp({
   logger: { level: "info" },

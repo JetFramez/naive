@@ -1,0 +1,62 @@
+# Rate limiting
+
+`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
+
+::: code-group
+
+```ts [memory — one process]
+import { rateLimit } from "@jetframez/notio/rate-limit";
+
+router.use(rateLimit({ limit: 100, window: "1m" }));
+
+router.post("/login").use(rateLimit({ limit: 5, window: "15m", key: (ctx) => ctx.body?.email ?? ctx.ip }));
+```
+
+```ts [Redis — several processes]
+import { rateLimit } from "@jetframez/notio/rate-limit";
+import Redis from "ioredis";
+
+const redis = new Redis(config.redis.url);
+
+app.use(rateLimit({ limit: 1000, window: "1m", store: redis, name: "global" }));
+router.post("/login").use(rateLimit({ limit: 5, window: "15m", store: redis, name: "login" }));
+```
+
+:::
+
+Every response the limiter sees carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset` (seconds until the limit resets). Once exceeded, it throws `TooManyRequests` (429) with `details: { limit, window, retryAfter }` and a `Retry-After` header.
+
+## Options
+
+| Option | Default | Meaning |
+|---|---|---|
+| `limit` | — | Points allowed per window. |
+| `window` | `"1m"` | Milliseconds or a duration string. |
+| `key` | `ctx.ip` | Groups requests into a bucket. Returning `null`/`undefined` skips the limit for that request. |
+| `skip` | — | Return `true` to bypass the limiter (health checks, internal callers). |
+| `cost` | `1` | Points this request consumes; a number or `(ctx) => number`. |
+| `algorithm` | `"fixed"` | `"fixed"`, `"sliding"`, or `"token-bucket"`. |
+| `store` | memory | A Redis client (`ioredis`, or anything with an ioredis-style `eval`). |
+| `name` | `"notio-rate-limit"` | Namespaces this limiter's keys, so several `rateLimit()` calls can share one client. |
+| `fallback` | `true` | With a Redis store: if Redis errors, decide from an in-process copy for that request instead of failing it. `false` fails closed. |
+| `onLimited` | — | `(ctx, { limit, window, retryAfter, key }) => void`, called exactly when a request is rejected. |
+
+## Algorithms
+
+- **`fixed`** — one counter per time bucket, reset at the boundary. Cheapest and most predictable. A burst straddling a boundary can land two limits' worth in a short span.
+- **`sliding`** — this bucket's count plus a time-weighted share of the previous bucket's. Removes the boundary effect and gives a hard "N in any window" guarantee, without storing a timestamp per request. Use it when you publish the limit as a contract.
+- **`token-bucket`** — `limit` tokens refill continuously over `window`; unused capacity carries forward up to `limit`. A quiet client can burst to the full limit; a client that stays over the average rate drains to zero and is throttled. The friendliest to real apps and browsers, whose traffic arrives in bursts.
+
+## Atomicity
+
+Both backends are race-free under concurrent requests to the same key. In memory, each decision is a synchronous read-modify-write with no `await` between the two, so nothing can interleave. On Redis, each decision is one Lua script run by `EVAL`, and Redis executes a script as a single indivisible command. Fixed and sliding increment first and decide from the returned total, so two concurrent requests can never observe the same count; the token bucket refills, spends and stores inside the script.
+
+## Redis notes
+
+Pass the client you already have; there is no adapter layer. `name` keeps each limiter's keys separate on the shared client. If Redis is unreachable, `fallback` (on by default) keeps requests flowing against a per-process copy and logs a warning; set `fallback: false` to fail closed instead.
+
+Window precision on Redis is milliseconds; sub-second windows are fine.
+
+## Why not the cache module's store option
+
+The cache module takes a Keyv store because caching benefits from swappable backends and does not need atomic operations. Rate limiting needs exactly one thing a generic key-value interface cannot offer, an atomic read-and-increment, so this module talks to Redis directly and stays deliberately narrower: memory or Redis, nothing in between.

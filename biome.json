@@ -56,18 +56,6 @@
           "suspicious": { "noExplicitAny": "off" }
         }
       }
-    },
-    {
-      "includes": ["**/*.vue"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUndeclaredDependencies": "off",
-            "noUnusedImports": "off",
-            "noUnusedVariables": "off"
-          }
-        }
-      }
     }
   ]
 }

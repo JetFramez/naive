@@ -1,0 +1,58 @@
+# Installation
+
+notio is one package. Optional modules ship as subpaths of it, not separate packages.
+
+## Requirements
+
+- Node.js 22 or later.
+- An ESM project (`"type": "module"` in `package.json`, or `.mts` files).
+- A [Standard Schema](https://standardschema.dev) library for validation — Zod, Valibot, or ArkType. notio depends on none of them; pick one.
+
+## Install
+
+::: code-group
+
+```sh [pnpm]
+pnpm add @jetframez/notio zod
+```
+
+```sh [npm]
+npm install @jetframez/notio zod
+```
+
+```sh [yarn]
+yarn add @jetframez/notio zod
+```
+
+:::
+
+Express itself ships inside `@jetframez/notio` — there is nothing else to install for the core. Zod is one option among three; swap it for `valibot` or `arktype` and nothing else in this guide changes.
+
+## Subpaths
+
+Each optional module is a subpath import. Nothing is registered unless you import and construct it.
+
+| Import | What it adds |
+|---|---|
+| `@jetframez/notio` | `createApp`, `Router`, `Ctx`, errors, hooks, logging, config, events, cache |
+| `@jetframez/notio/auth` | sessions, JWTs, opaque tokens, password hashing |
+| `@jetframez/notio/upload` | multipart file uploads |
+| `@jetframez/notio/rate-limit` | request rate limiting |
+| `@jetframez/notio/openapi` | OpenAPI 3.1 generation and a docs UI |
+
+## Optional peer packages
+
+A few features reach for a package only when you use them. Each throws a clear message naming the install command if you use the feature without it.
+
+| Package | Needed for |
+|---|---|
+| `@keyv/redis` | `redisStore()` in the cache module |
+| `ioredis` | a Redis-backed rate limiter |
+| `@node-rs/argon2` | `argon2()` password hashing in the auth module |
+| `@valibot/to-json-schema` | converting Valibot schemas for the OpenAPI module |
+
+Zod and ArkType need no extra package for OpenAPI conversion; both expose the conversion notio needs directly.
+
+## Next
+
+Continue to [Your first app](./first-app) to build something with it, or jump straight to a module's guide if you already know what you're using it for.
