@@ -1,0 +1,17 @@
+/**
+ * notio brand color — a teal accent in place of Starlight's default purple.
+ * Starlight defines dark-mode values on :root and light-mode values on
+ * :root[data-theme='light']; override both so the accent is consistent
+ * across the toggle.
+ */
+:root {
+  --sl-color-accent-low: #115e56;
+  --sl-color-accent: #2dd4bf;
+  --sl-color-accent-high: #99f6e4;
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #ccfbf1;
+  --sl-color-accent: #0d9488;
+  --sl-color-accent-high: #115e59;
+}

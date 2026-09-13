@@ -1,4 +1,6 @@
-# Errors
+---
+title: Errors
+---
 
 Throw errors; never call `next(err)`. The router forwards anything thrown by middleware or handlers to Express's error path, where notio's error handler renders one wire shape:
 
@@ -34,25 +36,22 @@ class QuotaExceeded extends defineError(402, "QUOTA_EXCEEDED") {}
 | `Internal` | 500 | `INTERNAL` |
 | `ServiceUnavailable` | 503 | `SERVICE_UNAVAILABLE` |
 
-Every constructor takes `(message?, details?)`; the default message is the HTTP status text.
+Every constructor takes `(message?, details?)`; the default message is the HTTP status text. `isHttpError(err)` narrows an unknown catch value to the `HttpError` type. A full list of the codes notio itself emits, across every module, is in the [error code reference](../../../reference/error-codes/).
 
 ## The error handler
 
-`createApp` registers the handler for you and `app.errors({ map, format, expose })` configures it. On a bare Express app, register it last, after a 404 handler:
-
-```ts
-import { errorHandler, notFound } from "@jetframez/notio";
-
-app.use(router);
-app.use(notFound());
-app.use(errorHandler({ expose: process.env.NODE_ENV !== "production" }));
-```
+`createApp` registers the handler for you and `app.errors({ map, format, expose })` configures it. On a bare Express app, register it yourself last, after a 404 handler — see [Using notio in an existing Express app](../../getting-started/existing-express/#error-handling).
 
 ### Classification
 
 Errors are matched in this order:
 
-1. **`map(err, ctx)`**, if configured. Return a `{ status, code, message, details? }` object or an `HttpError` to decide the response, or `undefined` to fall through. Use it to translate library errors (database constraint violations, upstream client errors) into your own codes. If `map` itself throws, that error is rendered as a 500.
+1. **`map(err, ctx)`**, if configured. Return a `{ status, code, message, details? }` object or an `HttpError` to decide the response, or `undefined` to fall through. Use it to translate library errors (database constraint violations, upstream client errors) into your own codes — `classifyError` is the function running this whole list, exported if you need the same classification outside the handler. If `map` itself throws, that error is rendered as a 500.
+
+   :::tip
+   `map` sees every thrown error first, including your own `HttpError` instances — it is the seam for a specific library's errors (a Postgres unique-violation code, a Stripe API error), not a place to reimplement `HttpError` handling. Return `undefined` for anything you do not want to translate, and it falls through to the ordinary classification below.
+   :::
+
 2. **`HttpError`** → its status, code, message and details.
 3. **Schema errors** thrown directly by a validation library (an error with an `issues` array, as Zod and Valibot throw from `parse`) → 422 `VALIDATION` with the issues in `details`.
 4. **body-parser errors** → 400 `BAD_REQUEST` "Malformed request body", or 413 `PAYLOAD_TOO_LARGE` with the limit and length in `details`.
