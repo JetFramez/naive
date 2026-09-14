@@ -2,7 +2,7 @@
 title: Errors
 ---
 
-Throw errors; never call `next(err)`. The router forwards anything thrown by middleware or handlers to Express's error path, where notio's error handler renders one wire shape:
+Throw errors; never call `next(err)`. The router forwards anything thrown by middleware or handlers to Express's error path, where naive's error handler renders one wire shape:
 
 ```json
 { "code": "NOT_FOUND", "message": "Order 42 does not exist", "details": { "id": 42 }, "requestId": "…" }
@@ -13,7 +13,7 @@ Throw errors; never call `next(err)`. The router forwards anything thrown by mid
 ## The HttpError family
 
 ```ts
-import { NotFound, Conflict, HttpError, defineError } from "@jetframez/notio";
+import { NotFound, Conflict, HttpError, defineError } from "@jetframez/naive";
 
 throw new NotFound();                                   // 404 NOT_FOUND "Not Found"
 throw new NotFound("Order 42 does not exist", { id: 42 });
@@ -36,11 +36,11 @@ class QuotaExceeded extends defineError(402, "QUOTA_EXCEEDED") {}
 | `Internal` | 500 | `INTERNAL` |
 | `ServiceUnavailable` | 503 | `SERVICE_UNAVAILABLE` |
 
-Every constructor takes `(message?, details?)`; the default message is the HTTP status text. `isHttpError(err)` narrows an unknown catch value to the `HttpError` type. A full list of the codes notio itself emits, across every module, is in the [error code reference](../../../reference/error-codes/).
+Every constructor takes `(message?, details?)`; the default message is the HTTP status text. `isHttpError(err)` narrows an unknown catch value to the `HttpError` type. A full list of the codes naive itself emits, across every module, is in the [error code reference](../../../reference/error-codes/).
 
 ## The error handler
 
-`createApp` registers the handler for you and `app.errors({ map, format, expose })` configures it. On a bare Express app, register it yourself last, after a 404 handler — see [Using notio in an existing Express app](../../getting-started/existing-express/#error-handling).
+`createApp` registers the handler for you and `app.errors({ map, format, expose })` configures it. On a bare Express app, register it yourself last, after a 404 handler — see [Using naive in an existing Express app](../../getting-started/existing-express/#error-handling).
 
 ### Classification
 

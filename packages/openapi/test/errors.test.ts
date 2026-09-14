@@ -1,4 +1,4 @@
-import { Forbidden, NotFound } from "@notio-internal/core";
+import { Forbidden, NotFound } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { errorSchemaRef, errorStatusAndCode } from "../src/errors.js";
 import { ComponentRegistry } from "../src/schema/hoist.js";

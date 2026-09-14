@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, readdir, readFile, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { clearUploadsParser, Router, type UploadFieldsSpec } from "@notio-internal/core";
+import { clearUploadsParser, Router, type UploadFieldsSpec } from "@naive-internal/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import { sweepTempDir } from "../src/index.js";
@@ -18,7 +18,7 @@ import {
 } from "./helpers/multipart.js";
 
 async function tempRoot(): Promise<string> {
-  return mkdtemp(join(tmpdir(), "notio-upload-test-"));
+  return mkdtemp(join(tmpdir(), "naive-upload-test-"));
 }
 
 async function subdirs(root: string): Promise<string[]> {
@@ -664,7 +664,7 @@ describe("module installation and startup failure", () => {
       .post("/x")
       .uploads({ f: {} })
       .handle(() => "unreachable");
-    const { createApp } = await import("@notio-internal/core");
+    const { createApp } = await import("@naive-internal/core");
     const app = createApp({ shutdown: { signals: false } });
     app.mount(router);
     await expect(app.listen(0, "127.0.0.1")).rejects.toThrow(/upload module is not installed/);
@@ -708,7 +708,7 @@ describe("sweepTempDir", () => {
 
   it("is a no-op when the directory does not exist", async () => {
     await expect(
-      sweepTempDir(join(tmpdir(), "notio-does-not-exist"), 1000, { warn: () => {} } as never),
+      sweepTempDir(join(tmpdir(), "naive-does-not-exist"), 1000, { warn: () => {} } as never),
     ).resolves.toBeUndefined();
   });
 

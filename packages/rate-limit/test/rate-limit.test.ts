@@ -1,4 +1,4 @@
-import { Router } from "@notio-internal/core";
+import { Router } from "@naive-internal/core";
 import RedisMock from "ioredis-mock";
 import { describe, expect, it } from "vitest";
 import { rateLimit } from "../src/rate-limit.js";

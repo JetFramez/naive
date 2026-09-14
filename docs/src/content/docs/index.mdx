@@ -1,9 +1,9 @@
 ---
-title: notio
+title: naive
 description: A TypeScript web framework on Express 5.
 template: splash
 hero:
-  title: notio
+  title: naive
   tagline: Keep Express as the transport and get a typed router, a per-request context, unified errors, and optional modules for auth, uploads, rate limiting, and OpenAPI — all fully typed, none of it hidden behind magic.
   actions:
     - text: Get started
@@ -21,7 +21,7 @@ import { CardGrid, LinkCard } from "@astrojs/starlight/components";
 ## A first route
 
 ```ts
-import { createApp, NotFound, Router } from "@jetframez/notio";
+import { createApp, NotFound, Router } from "@jetframez/naive";
 import { z } from "zod";
 
 const orders = new Router("/orders");
@@ -51,7 +51,7 @@ Every thrown error and every validation failure renders through the same shape:
 
 Continue with [Your first app](./guide/getting-started/first-app/) for the full walkthrough.
 
-## Why notio
+## Why naive
 
 <CardGrid>
   <LinkCard
@@ -76,7 +76,7 @@ Continue with [Your first app](./guide/getting-started/first-app/) for the full 
   />
   <LinkCard
     title="Bring your own schema library"
-    description="Zod, Valibot, and ArkType all work through Standard Schema. notio depends on none of them."
+    description="Zod, Valibot, and ArkType all work through Standard Schema. naive depends on none of them."
     href="./guide/getting-started/installation/"
   />
   <LinkCard

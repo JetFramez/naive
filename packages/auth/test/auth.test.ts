@@ -1,4 +1,4 @@
-import { Router } from "@notio-internal/core";
+import { Router } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { AUTH_REQUIREMENT, createAuth } from "../src/create-auth.js";
 import { apiKey } from "../src/strategies/api-key.js";

@@ -56,7 +56,7 @@ function leaf<Input, Output>(
   return {
     "~standard": {
       version: 1,
-      vendor: "notio",
+      vendor: "naive",
       validate,
       kind,
       defaultValue,

@@ -1,6 +1,6 @@
 import { defineConfig } from "tsdown";
 
-// Every @notio-internal/* package is inlined ("noExternal"): the published
+// Every @naive-internal/* package is inlined ("noExternal"): the published
 // package depends only on third-party libraries, never on the internal
 // packages that give the monorepo its boundaries. Shared code (core, which
 // every module depends on) is naturally split into one shared chunk across
@@ -18,5 +18,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   fixedExtension: false,
-  deps: { alwaysBundle: [/^@notio-internal\//] },
+  deps: { alwaysBundle: [/^@naive-internal\//] },
 });

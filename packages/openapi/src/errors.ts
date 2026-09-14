@@ -1,4 +1,4 @@
-import type { HttpErrorClass } from "@notio-internal/core";
+import type { HttpErrorClass } from "@naive-internal/core";
 import type { ComponentRegistry } from "./schema/hoist.js";
 import type { JsonSchema } from "./schema/json-schema.js";
 

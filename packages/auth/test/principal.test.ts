@@ -1,4 +1,4 @@
-import { type Ctx, currentCtx, Router } from "@notio-internal/core";
+import { type Ctx, currentCtx, Router } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { currentUser, requireUser } from "../src/principal.js";
 import { withApp } from "./helpers/http.js";

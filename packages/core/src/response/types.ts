@@ -2,7 +2,7 @@ import type { Readable } from "node:stream";
 import type { Response } from "express";
 
 /** Brand carried by every response descriptor returned from `ctx.json()` and friends. */
-export const RESPONSE: unique symbol = Symbol.for("notio.response");
+export const RESPONSE: unique symbol = Symbol.for("naive.response");
 
 export type ResponseHeaders = Record<string, string | number | readonly string[]>;
 

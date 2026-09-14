@@ -7,14 +7,14 @@ import {
   resolveConfig,
   setUploadsParser,
   type UploadMessages,
-} from "@notio-internal/core";
+} from "@naive-internal/core";
 import type { RequestHandler } from "express";
 import { createParser } from "./parse.js";
 import { sweepTempDir } from "./sweep.js";
 
 /** Config fragment for the primitive (env-representable) global options. */
 export const uploadConfig = {
-  tempDir: env.string({ default: join(tmpdir(), "notio-uploads") }),
+  tempDir: env.string({ default: join(tmpdir(), "naive-uploads") }),
   maxFileSize: env.bytes({ default: "10mb" }),
   maxTotalSize: env.bytes({ default: "50mb" }),
   memoryThreshold: env.bytes({ default: "0" }),

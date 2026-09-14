@@ -2,10 +2,10 @@
 title: createApp
 ---
 
-`createApp` builds a real Express application with notio's pieces wired in the right order: context, body parsing, health routes, your routes, then error handling. This page covers what it wires, in what order, and its lifecycle hooks.
+`createApp` builds a real Express application with naive's pieces wired in the right order: context, body parsing, health routes, your routes, then error handling. This page covers what it wires, in what order, and its lifecycle hooks.
 
 ```ts
-import { createApp } from "@jetframez/notio";
+import { createApp } from "@jetframez/naive";
 import { orders } from "./orders.js";
 
 const app = createApp({
@@ -37,14 +37,14 @@ Everything is registered when `listen()` runs, so the order you call `use`, `mou
 6. The error handler, configured through `app.errors()`.
 
 :::caution[Never register your own error handler]
-Register error handling through `app.errors({ map, format, expose })`, documented in [Errors](../errors/). Adding your own four-argument error middleware with `app.use()` runs alongside notio's, not instead of it, and receives errors notio's own handling has already classified.
+Register error handling through `app.errors({ map, format, expose })`, documented in [Errors](../errors/). Adding your own four-argument error middleware with `app.use()` runs alongside naive's, not instead of it, and receives errors naive's own handling has already classified.
 :::
 
-`app.express` is the Express instance itself. Anything registered on it directly runs before all of the above, which is the point of the escape hatch, but it also means notio's ordering does not apply to it.
+`app.express` is the Express instance itself. Anything registered on it directly runs before all of the above, which is the point of the escape hatch, but it also means naive's ordering does not apply to it.
 
 ## Middleware at app level
 
-`app.use()` accepts Express `(req, res, next)` handlers and notio `(ctx, next)` middleware, mixed freely — see [Middleware](../middleware/) for the full rules. App-level middleware runs for every request, including ones no route matches, so it is the place for `cors()`, `helmet()` and similar. A notio middleware at app level sees `await next()` resolve when the response has finished: it can observe the status, but headers can no longer be changed at that point. Router-level middleware, which sends after the chain unwinds, is the place for header mutation after `next()`.
+`app.use()` accepts Express `(req, res, next)` handlers and naive `(ctx, next)` middleware, mixed freely — see [Middleware](../middleware/) for the full rules. App-level middleware runs for every request, including ones no route matches, so it is the place for `cors()`, `helmet()` and similar. A naive middleware at app level sees `await next()` resolve when the response has finished: it can observe the status, but headers can no longer be changed at that point. Router-level middleware, which sends after the chain unwinds, is the place for header mutation after `next()`.
 
 ## Lifecycle
 

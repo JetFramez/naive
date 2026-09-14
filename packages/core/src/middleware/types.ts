@@ -16,7 +16,7 @@ export type MiddlewareResult = MaybePromise<void | ResponseDescriptor>;
 declare const ADDS: unique symbol;
 
 /**
- * A notio middleware bound to a specific context type. Prefer {@link Middleware}
+ * A naive middleware bound to a specific context type. Prefer {@link Middleware}
  * in user code; this form exists so builders can offer a narrowed `ctx`.
  */
 export type CtxMiddleware<C = Ctx, Adds extends object = {}> = ((

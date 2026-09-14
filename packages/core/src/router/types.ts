@@ -84,12 +84,12 @@ export type ParamsSchemaCheck<S extends StandardSchemaV1, Keys extends string> =
         ? [Exclude<Keys, keyof I>] extends [never]
           ? unknown
           : {
-              "~notio.error": `params schema is missing path params: ${Exclude<Keys, keyof I>}`;
+              "~naive.error": `params schema is missing path params: ${Exclude<Keys, keyof I>}`;
             }
         : {
-            "~notio.error": `params schema has keys not in the path: ${Exclude<keyof I & string, Keys>}`;
+            "~naive.error": `params schema has keys not in the path: ${Exclude<keyof I & string, Keys>}`;
           }
-      : { "~notio.error": "params schema must be an object schema" }
+      : { "~naive.error": "params schema must be an object schema" }
     : never;
 
 interface RouteBuilderBase<S extends RouteState> {

@@ -344,7 +344,7 @@ describe("errorHandler", () => {
     );
   });
 
-  it("works standalone on Express without a notio router", async () => {
+  it("works standalone on Express without a naive router", async () => {
     await withApp(
       (app) => {
         app.get("/plain", () => {

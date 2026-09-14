@@ -4,7 +4,7 @@ import {
   type Middleware,
   parseDuration,
   Unauthorized,
-} from "@notio-internal/core";
+} from "@naive-internal/core";
 import type { AuthAdapter, SessionRecord } from "./adapter.js";
 import { type AdapterRequirement, checkAdapter } from "./adapter.js";
 import { type CsrfOptions, csrf } from "./csrf.js";
@@ -16,7 +16,7 @@ import type { HasId, Strategy } from "./strategies/types.js";
 import { hashToken, initialExpiry, randomToken } from "./tokens.js";
 
 /** Marks a middleware produced by `auth.require()`, for tools (like the OpenAPI module) that need to see it. */
-export const AUTH_REQUIREMENT: unique symbol = Symbol.for("notio.auth.requirement");
+export const AUTH_REQUIREMENT: unique symbol = Symbol.for("naive.auth.requirement");
 
 export interface AuthRequirement {
   readonly strategies: readonly string[];

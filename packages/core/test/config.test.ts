@@ -135,7 +135,7 @@ describe("defineConfig", () => {
   });
 
   it("follows dotenv precedence and skips files in production", () => {
-    const dir = mkdtempSync(join(tmpdir(), "notio-config-"));
+    const dir = mkdtempSync(join(tmpdir(), "naive-config-"));
     writeFileSync(
       join(dir, ".env"),
       "PORT=1\nDATABASE_URL=postgres://env\nAUTH_SECRET=base\nONLY_BASE=1\n",

@@ -2,10 +2,10 @@
 title: Uploads
 ---
 
-`@jetframez/notio/upload` handles `multipart/form-data`: files stream to a temp directory (or stay in memory below a threshold), their type is detected from content rather than trusted from the client, and text fields validate through the ordinary `.body()` schema.
+`@jetframez/naive/upload` handles `multipart/form-data`: files stream to a temp directory (or stay in memory below a threshold), their type is detected from content rather than trusted from the client, and text fields validate through the ordinary `.body()` schema.
 
 ```ts
-import { uploads } from "@jetframez/notio/upload";
+import { uploads } from "@jetframez/naive/upload";
 
 app.use(uploads({ maxFileSize: "10mb", maxTotalSize: "50mb" }));
 
@@ -31,7 +31,7 @@ Calling `uploads(options)` installs the module immediately, as a side effect of 
 
 | Option | Default | Meaning |
 |---|---|---|
-| `tempDir` | a `notio-uploads` directory under the OS temp dir | Where files are written. Each request gets its own subdirectory, named by request id. |
+| `tempDir` | a `naive-uploads` directory under the OS temp dir | Where files are written. Each request gets its own subdirectory, named by request id. |
 | `maxFileSize` | `"10mb"` | Default per-file limit. A field's own `maxSize` overrides it. |
 | `maxTotalSize` | `"50mb"` | Combined limit across every file in one request. |
 | `memoryThreshold` | `"0"` | Files at or under this size stay in memory (`buffer`, no `path`); larger files spill to disk. `"0"` means everything goes to disk. |
@@ -96,4 +96,4 @@ Cleanup deletes every accepted file's temp copy once the response finishes or th
 
 ## No storage backend, by design
 
-The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step — notio owns the multipart parsing and validation, and you own where the bytes end up. See [Design principles: own the interface, borrow the engine](../../about/principles/#own-the-interface-borrow-the-engine).
+The module has no dependency on any particular storage; `move()` is how a handler hands a file to S3, a database blob column, or permanent local storage. There is no built-in upload-to-cloud step — naive owns the multipart parsing and validation, and you own where the bytes end up. See [Design principles: own the interface, borrow the engine](../../about/principles/#own-the-interface-borrow-the-engine).

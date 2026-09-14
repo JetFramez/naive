@@ -3,7 +3,7 @@ import type {
   UploadIssueMeta,
   UploadMessage,
   UploadMessages,
-} from "@notio-internal/core";
+} from "@naive-internal/core";
 
 const DEFAULTS: Record<UploadIssueCode, (meta: UploadIssueMeta) => string> = {
   FILE_TOO_LARGE: (m) => `File "${m.filename}" exceeds the maximum size of ${m.limit} bytes`,

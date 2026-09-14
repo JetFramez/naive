@@ -7,7 +7,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 The router is chainable and typed. You declare a path, optional schemas, then hand it a handler. The router owns the send step: whatever the handler returns becomes the response.
 
 ```ts
-import { Router } from "@jetframez/notio";
+import { Router } from "@jetframez/naive";
 import { z } from "zod";
 
 const orders = new Router("/orders");
@@ -59,7 +59,7 @@ orders.get("/:id").params(z.object({ orderId: z.string() }));   // error: missin
 
 ## Schemas: query, body, headers, response
 
-`.query()`, `.body()`, `.headers()` and `.response()` accept any [Standard Schema](https://standardschema.dev) value. Zod, Valibot and ArkType all work; notio has no dependency on any of them.
+`.query()`, `.body()`, `.headers()` and `.response()` accept any [Standard Schema](https://standardschema.dev) value. Zod, Valibot and ArkType all work; naive has no dependency on any of them.
 
 <Tabs syncKey="schema-library">
 <TabItem label="Zod">
@@ -127,7 +127,7 @@ Validation runs after router and group middleware and before route middleware, i
 - A single query value is promoted to a one-element array when the schema wants an array, so `?tags=a` and `?tags=a&tags=b` both validate against `z.array(z.string())`.
 - Unknown keys follow the schema's own policy. Zod and Valibot strip them by default; use `.strict()` to reject.
 - Header names are lower-case. After validation `ctx.headers.all()` returns the validated object; `ctx.headers.get()` always reads the raw request.
-- The body is whatever the body parser put on `req.body`. `createApp` always installs a JSON parser; urlencoded parsing is off by default (`body.urlencoded` in [createApp](../app/#options)). On bare Express, install `express.json()` yourself — see [Using notio in an existing Express app](../../getting-started/existing-express/).
+- The body is whatever the body parser put on `req.body`. `createApp` always installs a JSON parser; urlencoded parsing is off by default (`body.urlencoded` in [createApp](../app/#options)). On bare Express, install `express.json()` yourself — see [Using naive in an existing Express app](../../getting-started/existing-express/).
 
 ## Statics and redirects
 

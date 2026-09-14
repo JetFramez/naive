@@ -9,7 +9,7 @@ A route's chain is router middleware, then group middleware, then route middlewa
 A `Middleware<Adds>` declares what it puts on `ctx`. Everything after it in the chain sees those fields as present, at router, group and route level.
 
 ```ts
-import type { Middleware } from "@jetframez/notio";
+import type { Middleware } from "@jetframez/naive";
 
 const authed: Middleware<{ user: User }> = async (ctx, next) => {
   ctx.user = await lookup(ctx.bearer()); // ctx.user is User | undefined inside
@@ -68,7 +68,7 @@ router.use(async (ctx, next) => {
 
 A `ctx` middleware must do one of four things: call `next()`, throw, respond through `ctx.res`, or return a response descriptor without calling `next()`. Doing none of them raises `Internal("middleware ended without responding or calling next()")`.
 
-Errors are thrown, never passed to `next(err)`. The router catches them and forwards them to Express's error path, where the notio error handler (or your own) renders them — see [Errors](../errors/).
+Errors are thrown, never passed to `next(err)`. The router catches them and forwards them to Express's error path, where the naive error handler (or your own) renders them — see [Errors](../errors/).
 
 Express middleware in the chain keeps Express semantics: `next()` continues, `next(err)` becomes a thrown error, `next("route")` skips to the next matching route, and ending the response without calling `next()` stops the chain. A four-argument `(err, req, res, next)` handler sees errors thrown by anything after it in the chain.
 

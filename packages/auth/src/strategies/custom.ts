@@ -1,4 +1,4 @@
-import type { Ctx, MaybePromise } from "@notio-internal/core";
+import type { Ctx, MaybePromise } from "@naive-internal/core";
 import { absent, authenticated, type HasId, type Strategy } from "./types.js";
 
 export interface CustomOptions<User> {

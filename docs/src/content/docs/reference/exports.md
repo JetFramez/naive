@@ -2,9 +2,9 @@
 title: Exports
 ---
 
-Every named export from `@jetframez/notio` and its subpaths that the guide documents, grouped by area. Each subpath re-exports more low-level types than are listed here (compiled Lua scripts for the rate limiter, JSON Schema conversion internals, and similar) — those are implementation detail for advanced use, not part of the documented contract, and are best read from source if you need them.
+Every named export from `@jetframez/naive` and its subpaths that the guide documents, grouped by area. Each subpath re-exports more low-level types than are listed here (compiled Lua scripts for the rate limiter, JSON Schema conversion internals, and similar) — those are implementation detail for advanced use, not part of the documented contract, and are best read from source if you need them.
 
-## `@jetframez/notio` — app and lifecycle
+## `@jetframez/naive` — app and lifecycle
 
 | Export | What it is |
 |---|---|
@@ -96,9 +96,9 @@ Every named export from `@jetframez/notio` and its subpaths that the guide docum
 | `runSchema`, `SchemaOutcome`, `toIssues`, `ValidationDetails`, `ValidationIssue`, `ValidationSection`, `validationError` | Internals behind route validation |
 | `parseDuration`, `parseBytes` | Duration and byte-size string parsing — [reference](../durations-and-sizes/) |
 | `MaybePromise`, `Simplify`, `UnionToIntersection` | Generic TypeScript helper types used across the public API |
-| `UPLOAD_ISSUE_CODES`, `UploadedFile`, `UploadFieldSpec`, `UploadFieldsSpec`, `UploadIssueCode`, `UploadIssueMeta`, `UploadMessage`, `UploadMessages`, `UploadsOf` | Upload types available from the core package for typing `.uploads()`, even before installing `@jetframez/notio/upload` |
+| `UPLOAD_ISSUE_CODES`, `UploadedFile`, `UploadFieldSpec`, `UploadFieldsSpec`, `UploadIssueCode`, `UploadIssueMeta`, `UploadMessage`, `UploadMessages`, `UploadsOf` | Upload types available from the core package for typing `.uploads()`, even before installing `@jetframez/naive/upload` |
 
-## `@jetframez/notio/auth`
+## `@jetframez/naive/auth`
 
 | Export | What it is |
 |---|---|
@@ -112,7 +112,7 @@ Every named export from `@jetframez/notio` and its subpaths that the guide docum
 | `currentUser`, `requireUser` | Reading the current user via ambient context |
 | `hashToken`, `randomToken`, `initialExpiry`, `rollSession`, `ROLL_THROTTLE_MS` | Token internals, exposed for a custom adapter or strategy |
 
-## `@jetframez/notio/upload`
+## `@jetframez/naive/upload`
 
 | Export | What it is |
 |---|---|
@@ -120,14 +120,14 @@ Every named export from `@jetframez/notio` and its subpaths that the guide docum
 | `UploadedFileImpl` | The concrete class behind the `UploadedFile` interface |
 | `sanitizeFilename`, `detectType`, `matchesTypes`, `sweepTempDir`, `resolveMessage`, `createParser`, `ResolvedUploadOptions` | Internals, exposed for testing or a custom parser |
 
-## `@jetframez/notio/rate-limit`
+## `@jetframez/naive/rate-limit`
 
 | Export | What it is |
 |---|---|
 | `rateLimit`, `RateLimitOptions`, `RateLimitInfo` | [Rate limiting](../../guide/modules/rate-limit/) |
 | `MemoryStore`, `createConsumer`, `BackendOptions`, `Consume`, `Algorithm`, `ConsumeArgs`, `ConsumeResult`, `RedisLike` | The backend abstraction, for writing your own store |
 
-## `@jetframez/notio/openapi`
+## `@jetframez/naive/openapi`
 
 | Export | What it is |
 |---|---|

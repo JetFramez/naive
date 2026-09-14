@@ -1,5 +1,5 @@
 import type { AddressInfo } from "node:net";
-import { type App, createApp, createLogger } from "@notio-internal/core";
+import { type App, createApp, createLogger } from "@naive-internal/core";
 
 export type LooseResponse = Omit<Response, "json"> & { json(): Promise<any> };
 

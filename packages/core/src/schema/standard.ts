@@ -1,6 +1,6 @@
 /**
  * The Standard Schema V1 interface (https://standardschema.dev), copied here so
- * notio has no runtime or type dependency on any particular validation library.
+ * naive has no runtime or type dependency on any particular validation library.
  * Zod, Valibot, ArkType and others implement it.
  */
 export interface StandardSchemaV1<Input = unknown, Output = Input> {

@@ -26,8 +26,8 @@ jobs:
 
       - run: pnpm build
 
-      - run: pnpm --filter @jetframez/notio verify
+      - run: pnpm --filter @jetframez/naive verify
 
       - run: pnpm test
 
-      - run: pnpm --filter notio-docs build
+      - run: pnpm --filter naive-docs build

@@ -11,7 +11,7 @@ Two runnable apps live in the repository's `examples/` directory, type-checked i
 
 ## minimal
 
-The smallest useful notio app: one router, a validated body, a thrown error rendered in the unified shape. Start here if you haven't read [Your first app](../guide/getting-started/first-app/) yet — this is the same code, in full.
+The smallest useful naive app: one router, a validated body, a thrown error rendered in the unified shape. Start here if you haven't read [Your first app](../guide/getting-started/first-app/) yet — this is the same code, in full.
 
 ### A route with no schema, and a thrown error
 
@@ -38,11 +38,11 @@ curl -X POST http://localhost:3000/orders -H 'content-type: application/json' -d
 
 <RegionCode code={minimalSource} region="wiring" title="examples/minimal/src/index.ts" />
 
-Full source: [`examples/minimal/src/index.ts`](https://github.com/jetframez/notio/blob/main/examples/minimal/src/index.ts).
+Full source: [`examples/minimal/src/index.ts`](https://github.com/jetframez/naive/blob/main/examples/minimal/src/index.ts).
 
 ## auth-drizzle
 
-`@jetframez/notio/auth` wired to a real database: an `AuthAdapter` implemented on Drizzle ORM against SQLite, backing signup, login, `GET /me`, and logout. Read [Auth](../guide/modules/auth/) alongside this for what each piece means.
+`@jetframez/naive/auth` wired to a real database: an `AuthAdapter` implemented on Drizzle ORM against SQLite, backing signup, login, `GET /me`, and logout. Read [Auth](../guide/modules/auth/) alongside this for what each piece means.
 
 ### The adapter
 
@@ -90,7 +90,7 @@ curl -b cookies.txt http://localhost:3000/auth/me
 curl -b cookies.txt -X POST http://localhost:3000/auth/logout
 ```
 
-The SQLite file and its tables are created automatically on first run. Full source: [`examples/auth-drizzle`](https://github.com/jetframez/notio/tree/main/examples/auth-drizzle).
+The SQLite file and its tables are created automatically on first run. Full source: [`examples/auth-drizzle`](https://github.com/jetframez/naive/tree/main/examples/auth-drizzle).
 
 ## What's not covered by an example yet
 

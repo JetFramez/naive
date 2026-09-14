@@ -1,8 +1,8 @@
 {
-  "name": "@notio-internal/rate-limit",
+  "name": "@naive-internal/rate-limit",
   "version": "0.0.0",
   "private": true,
-  "description": "notio rate limiting: fixed window, sliding window, token bucket, on Keyv",
+  "description": "naive rate limiting: fixed window, sliding window, token bucket, on Keyv",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -24,7 +24,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@notio-internal/core": "workspace:*"
+    "@naive-internal/core": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "catalog:",

@@ -1,12 +1,12 @@
 /**
- * The same well-known symbol `@notio-internal/auth`'s `auth.require()` tags
+ * The same well-known symbol `@naive-internal/auth`'s `auth.require()` tags
  * its middleware with. Recreated here via `Symbol.for` (the global symbol
  * registry) rather than importing the auth package, so the OpenAPI module
  * has no dependency on it: a route secured by any middleware that happens to
  * carry this symbol is documented; anything else, including a hand-rolled
  * auth check, is invisible, exactly as if it were unmarked.
  */
-const AUTH_REQUIREMENT: unique symbol = Symbol.for("notio.auth.requirement");
+const AUTH_REQUIREMENT: unique symbol = Symbol.for("naive.auth.requirement");
 
 export interface AuthRequirement {
   readonly strategies: readonly string[];

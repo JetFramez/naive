@@ -2,7 +2,7 @@
 title: Durations and sizes
 ---
 
-Wherever notio takes a time or a byte size — `maxAge`, TTLs, windows, deadlines, body limits, file size limits — it accepts a plain number or a string in one of these grammars. Both are exported utilities, in case you want to parse the same strings yourself: `parseDuration(value, name?)` and `parseBytes(value, name?)`.
+Wherever naive takes a time or a byte size — `maxAge`, TTLs, windows, deadlines, body limits, file size limits — it accepts a plain number or a string in one of these grammars. Both are exported utilities, in case you want to parse the same strings yourself: `parseDuration(value, name?)` and `parseBytes(value, name?)`.
 
 ## Durations
 

@@ -19,7 +19,7 @@ title: How a request flows
 
 Two things fall outside this list:
 
-- Anything you register directly on `app.express` runs **before all of it**. That is the point of the escape hatch, but it means notio's ordering guarantees do not apply to it.
+- Anything you register directly on `app.express` runs **before all of it**. That is the point of the escape hatch, but it means naive's ordering guarantees do not apply to it.
 - App-level `onRequest` hooks fire at step 1, before routing has happened at all — the one place a request is observed even if no router ends up matching it.
 
 Full detail: [createApp](../../core/app/).
@@ -78,6 +78,6 @@ error thrown
 
 ## Next
 
-- [Using notio in an existing Express app](../existing-express/) if you are not starting from `createApp`.
+- [Using naive in an existing Express app](../existing-express/) if you are not starting from `createApp`.
 - [Testing](../../guides/testing/) for what this ordering means for driving requests in tests.
 - [Production](../../guides/production/) for what changes between `development` and `production`.

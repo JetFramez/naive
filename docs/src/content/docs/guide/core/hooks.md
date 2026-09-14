@@ -7,7 +7,7 @@ Hooks observe requests. They cannot change the response, and they are the place 
 | Hook | Router level | App level |
 |---|---|---|
 | `onRequest(ctx)` | when a route of that router matched, before its middleware | first thing, for every request |
-| `onResponse(ctx, result?)` | after the response was sent, with the handler's return value | when the response finishes, with the return value if a notio route produced one |
+| `onResponse(ctx, result?)` | after the response was sent, with the handler's return value | when the response finishes, with the return value if a naive route produced one |
 | `onError(ctx, error)` | once, before the error is forwarded to the error handler | once per error, see below |
 
 ```ts
@@ -20,7 +20,7 @@ app.onResponse((ctx) => metrics.observe("latency", ctx.res.statusCode));
 
 ## Ordering and the once-per-error guarantee
 
-Router-level hooks run before app-level ones. When a route throws, the router runs its own `onError` hooks, then the app's, and marks the error. The error handler sees the mark and does not run app hooks again. Errors that never passed through a notio router, such as a plain Express route throwing or the 404 handler, reach the error handler unmarked, and it runs the app hooks itself. Either way every error is observed exactly once at each level.
+Router-level hooks run before app-level ones. When a route throws, the router runs its own `onError` hooks, then the app's, and marks the error. The error handler sees the mark and does not run app hooks again. Errors that never passed through a naive router, such as a plain Express route throwing or the 404 handler, reach the error handler unmarked, and it runs the app hooks itself. Either way every error is observed exactly once at each level.
 
 Nested routers (groups and mounts) inherit the hooks of the routers above them, outer first.
 
@@ -32,4 +32,4 @@ A throwing `onRequest` hook fails the request: the error goes to the error handl
 
 ## On a bare Express app
 
-`hooks(app, { onRequest, onResponse, onError })` installs the same context middleware `createApp` uses, plus these app-level hooks — call it once, before routes. See [Using notio in an existing Express app](../../getting-started/existing-express/#hooks) for the full example. Calling it more than once adds more hooks; each request still gets one context.
+`hooks(app, { onRequest, onResponse, onError })` installs the same context middleware `createApp` uses, plus these app-level hooks — call it once, before routes. See [Using naive in an existing Express app](../../getting-started/existing-express/#hooks) for the full example. Calling it more than once adds more hooks; each request still gets one context.

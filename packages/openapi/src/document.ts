@@ -1,4 +1,4 @@
-import type { RouteInfo } from "@notio-internal/core";
+import type { RouteInfo } from "@naive-internal/core";
 import { errorSchemaRef, errorStatusAndCode } from "./errors.js";
 import { toOpenApiPath } from "./path-template.js";
 import { convertSchema, type SchemaConverters } from "./schema/convert.js";

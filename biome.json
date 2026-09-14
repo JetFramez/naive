@@ -30,7 +30,7 @@
               "**/*.test.ts",
               "**/*.test-d.ts",
               "**/*.config.ts",
-              "**/notio/src/**",
+              "**/naive/src/**",
               "**/astro.config.mjs",
               "**/docs/src/**"
             ]

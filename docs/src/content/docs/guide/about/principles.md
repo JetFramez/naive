@@ -6,7 +6,7 @@ These are the rules the API is built to, not a style guide for using it. They ex
 
 ## Express is the transport
 
-`app.express` is always the real Express instance. Any `(req, res, next)` middleware from the ecosystem works unchanged. notio never wraps `cors`, `helmet`, `compression`, or similar — there is nothing to wrap; they already work.
+`app.express` is always the real Express instance. Any `(req, res, next)` middleware from the ecosystem works unchanged. naive never wraps `cors`, `helmet`, `compression`, or similar — there is nothing to wrap; they already work.
 
 ## Wrap only when it adds behaviour
 
@@ -14,7 +14,7 @@ A module exists only if it needs `ctx`, produces errors that should join the uni
 
 ## Own the interface, borrow the engine
 
-Uploads are built on `busboy`. Logging is `pino`. JWTs go through `jose`. Cache stores are Keyv-compatible. notio writes the API surface — the types, the validation, the unified errors — and doesn't reimplement problems that are already solved well. Rate limiting is the one exception worth naming: it needs one thing a generic key-value interface can't offer, an atomic read-and-increment, so it's a small engine of its own rather than a wrapper — see [Rate limiting: why not the cache module's store option](../../modules/rate-limit/#why-not-the-cache-modules-store-option).
+Uploads are built on `busboy`. Logging is `pino`. JWTs go through `jose`. Cache stores are Keyv-compatible. naive writes the API surface — the types, the validation, the unified errors — and doesn't reimplement problems that are already solved well. Rate limiting is the one exception worth naming: it needs one thing a generic key-value interface can't offer, an atomic read-and-increment, so it's a small engine of its own rather than a wrapper — see [Rate limiting: why not the cache module's store option](../../modules/rate-limit/#why-not-the-cache-modules-store-option).
 
 ## No decorators, no DI container, no middleware phases
 
@@ -34,4 +34,4 @@ Config, missing adapter methods, and misconfigured strategies error at boot, wit
 
 ## See also
 
-[What notio does not do](../scope/) covers the boundary these principles draw — the things that stay out of the framework because they'd violate one of the rules above, or because they're simply out of scope for this phase.
+[What naive does not do](../scope/) covers the boundary these principles draw — the things that stay out of the framework because they'd violate one of the rules above, or because they're simply out of scope for this phase.

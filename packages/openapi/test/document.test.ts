@@ -1,5 +1,5 @@
-import { cookieSession, createAuth } from "@notio-internal/auth";
-import { type App, createApp, Forbidden, NotFound, Router } from "@notio-internal/core";
+import { cookieSession, createAuth } from "@naive-internal/auth";
+import { type App, createApp, Forbidden, NotFound, Router } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { buildDocument } from "../src/document.js";

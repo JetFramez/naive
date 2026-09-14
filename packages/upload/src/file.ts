@@ -2,7 +2,7 @@ import { createReadStream, type ReadStream } from "node:fs";
 import { copyFile, mkdir, rename, unlink, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { Readable } from "node:stream";
-import type { UploadedFile } from "@notio-internal/core";
+import type { UploadedFile } from "@naive-internal/core";
 
 export interface UploadFileData {
   field: string;

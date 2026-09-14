@@ -1,5 +1,5 @@
-import type { Ctx, MaybePromise, Middleware } from "@notio-internal/core";
-import { parseDuration, TooManyRequests } from "@notio-internal/core";
+import type { Ctx, MaybePromise, Middleware } from "@naive-internal/core";
+import { parseDuration, TooManyRequests } from "@naive-internal/core";
 import { createConsumer } from "./store.js";
 import type { Algorithm, RedisLike } from "./types.js";
 
@@ -30,7 +30,7 @@ export interface RateLimitOptions {
    * `rateLimit()` calls freely; `name` keeps their keys apart.
    */
   readonly store?: RedisLike;
-  /** Namespaces this limiter's keys. Default `"notio-rate-limit"`. */
+  /** Namespaces this limiter's keys. Default `"naive-rate-limit"`. */
   readonly name?: string;
   /** With a Redis store: fall back to memory for a request when Redis errors. Default `true`. */
   readonly fallback?: boolean;
@@ -47,7 +47,7 @@ export interface RateLimitOptions {
 export function rateLimit(options: RateLimitOptions): Middleware {
   const { limit } = options;
   const windowMs = parseDuration(options.window ?? "1m", "rate-limit window");
-  const prefix = options.name ?? "notio-rate-limit";
+  const prefix = options.name ?? "naive-rate-limit";
   const consume = createConsumer({
     algorithm: options.algorithm ?? "fixed",
     redis: options.store,

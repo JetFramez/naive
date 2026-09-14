@@ -68,7 +68,7 @@ describe("groups, mounts, statics, redirects", () => {
   });
 
   it("serves statics with duration maxAge and optional SPA fallback", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "notio-static-"));
+    const dir = mkdtempSync(join(tmpdir(), "naive-static-"));
     writeFileSync(join(dir, "index.html"), "<h1>app</h1>");
     mkdirSync(join(dir, "css"));
     writeFileSync(join(dir, "css", "a.css"), "body{}");
