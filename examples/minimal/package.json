@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@jetframez/notio": "workspace:*",
+    "notio": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

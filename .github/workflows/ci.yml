@@ -26,7 +26,7 @@ jobs:
 
       - run: pnpm build
 
-      - run: pnpm --filter @jetframez/notio verify
+      - run: pnpm --filter notio verify
 
       - run: pnpm test
 

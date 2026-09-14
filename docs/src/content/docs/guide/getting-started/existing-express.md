@@ -10,7 +10,7 @@ title: Using notio in an existing Express app
 
 ```ts
 import express from "express";
-import { context, Router } from "@jetframez/notio";
+import { context, Router } from "notio";
 
 const app = express();
 app.use(express.json()); // notio does not install body parsers for you here
@@ -35,7 +35,7 @@ A `Router` also enters the context store for its own chains on demand, so a rout
 Register the 404 handler and the error handler last, after every router — same rule as any Express app.
 
 ```ts
-import { errorHandler, notFound } from "@jetframez/notio";
+import { errorHandler, notFound } from "notio";
 
 app.use(orders);
 app.use(notFound());
@@ -49,7 +49,7 @@ See [Errors](../../core/errors/) for `map`, `format`, and how classification wor
 `hooks()` installs the same context middleware as `context()`, plus app-level observers.
 
 ```ts
-import { hooks } from "@jetframez/notio";
+import { hooks } from "notio";
 
 hooks(app, {
   onRequest: [(ctx) => metrics.inc("requests")],

@@ -2,10 +2,10 @@
 title: OpenAPI
 ---
 
-`@jetframez/notio/openapi` walks `routes()` into an OpenAPI 3.1 document and serves it with a Scalar UI. No code generation — this module only produces the spec.
+`notio/openapi` walks `routes()` into an OpenAPI 3.1 document and serves it with a Scalar UI. No code generation — this module only produces the spec.
 
 ```ts
-import { openapi } from "@jetframez/notio/openapi";
+import { openapi } from "notio/openapi";
 
 const spec = openapi({
   info: { title: "Shop API", version: "1.0.0" },

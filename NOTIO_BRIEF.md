@@ -1,6 +1,6 @@
 # notio — Build Brief
 
-`@jetframez/notio` is a TypeScript web framework whose transport layer is Express 5. It adds a typed, chainable router, a per-request context, unified errors, lifecycle hooks, structured logging, config, and a set of optional modules (auth, uploads, rate limiting, cache, events, OpenAPI). Every piece is usable on a bare Express app; `createApp()` wires them correctly.
+`notio` is a TypeScript web framework whose transport layer is Express 5. It adds a typed, chainable router, a per-request context, unified errors, lifecycle hooks, structured logging, config, and a set of optional modules (auth, uploads, rate limiting, cache, events, OpenAPI). Every piece is usable on a bare Express app; `createApp()` wires them correctly.
 
 This document is the source of truth for scope and API shape. Where it is silent, prefer the simplest design that keeps Express visible and avoids new concepts.
 
@@ -30,7 +30,7 @@ notio/
     upload/       @notio-internal/upload
     rate-limit/   @notio-internal/rate-limit
     openapi/      @notio-internal/openapi
-    notio/        @jetframez/notio            published façade; re-exports the above via subpaths
+    notio/        notio            published façade; re-exports the above via subpaths
   examples/       runnable apps, type-checked in CI, embedded in docs
   docs/           VitePress
 ```
@@ -56,7 +56,7 @@ Heavy/optional dependencies: password hashing defaults to Node `crypto.scrypt`; 
 ## 3. Core: `createApp`
 
 ```ts
-import { createApp } from "@jetframez/notio";
+import { createApp } from "notio";
 
 const app = createApp({
   logger: { level, pretty, redact, startup },
@@ -165,7 +165,7 @@ interface Ctx<P = Record<string, string>, B = unknown, Q = Record<string, string
 }
 ```
 
-Augmentation: `declare module "@jetframez/notio" { interface Ctx { user?: User } }` globally, or `Middleware<{ user: User }>` per middleware for chain narrowing.
+Augmentation: `declare module "notio" { interface Ctx { user?: User } }` globally, or `Middleware<{ user: User }>` per middleware for chain narrowing.
 
 Cookies: parsed lazily with the `cookie` package; writes via `res.append("Set-Cookie")`. Defaults `path: "/"`, `httpOnly: true`, `sameSite: "lax"`, `secure` when HTTPS/trust proxy. `maxAge` accepts duration strings. Signed cookies use HMAC-SHA256 with key rotation (`secret: string | string[]`). `getSigned`/`setSigned` throw a clear error if no secret is configured.
 
@@ -275,7 +275,7 @@ Keyv underneath; memory adapter shipped; Redis via `@keyv/redis` (optional). Tag
 
 ---
 
-## 13. Module: upload (`@jetframez/notio/upload`)
+## 13. Module: upload (`notio/upload`)
 
 ```ts
 app.use(uploads({ tempDir, maxFileSize: "10mb", maxTotalSize: "50mb", memoryThreshold: "0", sweepAfter: "1h", types?, messages? }));
@@ -297,7 +297,7 @@ router.post("/x").uploads({
 
 ---
 
-## 14. Module: auth (`@jetframez/notio/auth`) — minimal by design
+## 14. Module: auth (`notio/auth`) — minimal by design
 
 ```ts
 const auth = createAuth<User>({
@@ -345,7 +345,7 @@ Out of scope: OAuth, magic links, 2FA, email verification, password reset, autho
 
 ---
 
-## 15. Module: rate-limit (`@jetframez/notio/rate-limit`)
+## 15. Module: rate-limit (`notio/rate-limit`)
 
 ```ts
 rateLimit({ limit, window: "1m", key?: (ctx) => string | null, skip?, cost?, algorithm?: "sliding" | "fixed" | "token-bucket", store?, name? })
@@ -358,7 +358,7 @@ rateLimit({ limit, window: "1m", key?: (ctx) => string | null, skip?, cost?, alg
 
 ---
 
-## 16. Module: openapi (`@jetframez/notio/openapi`)
+## 16. Module: openapi (`notio/openapi`)
 
 ```ts
 const spec = openapi({ info, servers?, security?: { bearer: {...}, ... }, wrapResponse? }).from(app | ...routers);
@@ -395,7 +395,7 @@ Each milestone: implement, type-check, lint, test, write the guide page, stop fo
 - **M8 — auth.** scrypt default, strategies, adapter checks, sessions, JWT, opaque, refresh with rotation/family/reuse detection, CSRF.
 - **M9 — rate-limit.**
 - **M10 — openapi.**
-- **M11 — Façade + publish.** `@jetframez/notio` subpath exports, tsdown inlining, changesets, first release. `examples/minimal` and `examples/auth-drizzle` in CI. Docs site skeleton.
+- **M11 — Façade + publish.** `notio` subpath exports, tsdown inlining, changesets, first release. `examples/minimal` and `examples/auth-drizzle` in CI. Docs site skeleton.
 
 ---
 

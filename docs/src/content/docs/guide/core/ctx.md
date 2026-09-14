@@ -55,7 +55,7 @@ Signed cookies use HMAC-SHA256. Configure `createApp({ cookies: { secret } })`; 
 Add fields every request carries by merging into the interface:
 
 ```ts
-declare module "@jetframez/notio" {
+declare module "notio" {
   interface Ctx {
     tenant?: Tenant;
   }

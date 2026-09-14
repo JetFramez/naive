@@ -9,7 +9,7 @@ A route's chain is router middleware, then group middleware, then route middlewa
 A `Middleware<Adds>` declares what it puts on `ctx`. Everything after it in the chain sees those fields as present, at router, group and route level.
 
 ```ts
-import type { Middleware } from "@jetframez/notio";
+import type { Middleware } from "notio";
 
 const authed: Middleware<{ user: User }> = async (ctx, next) => {
   ctx.user = await lookup(ctx.bearer()); // ctx.user is User | undefined inside

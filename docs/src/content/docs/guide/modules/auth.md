@@ -2,10 +2,10 @@
 title: Auth
 ---
 
-`@jetframez/notio/auth` is deliberately minimal: strategies, sessions, JWTs, opaque tokens with rotation, and password hashing. There is no OAuth, no magic links, no 2FA, no email verification, no password reset, and no authorization model — build those on top with `currentUser()` and your own logic.
+`notio/auth` is deliberately minimal: strategies, sessions, JWTs, opaque tokens with rotation, and password hashing. There is no OAuth, no magic links, no 2FA, no email verification, no password reset, and no authorization model — build those on top with `currentUser()` and your own logic.
 
 ```ts
-import { createAuth, cookieSession, jwt, apiKey } from "@jetframez/notio/auth";
+import { createAuth, cookieSession, jwt, apiKey } from "notio/auth";
 
 export const auth = createAuth<User>({
   adapter: myAdapter,
@@ -106,7 +106,7 @@ const user = await auth.verifyPassword(email, password);  // throws Unauthorized
 `verifyPassword` hashes a dummy password even when the email is unknown, so a wrong password and an unknown account take the same time to reject. Default hashing is `scrypt()` (Node's built-in, no native dependency); `argon2()` is available behind the optional `@node-rs/argon2` package:
 
 ```ts
-import { argon2 } from "@jetframez/notio/auth";
+import { argon2 } from "notio/auth";
 createAuth({ hash: argon2(), /* ... */ });
 ```
 
@@ -135,7 +135,7 @@ Double-submit cookie: issues a token cookie on any request that lacks one, and r
 ## Reading the current user anywhere
 
 ```ts
-import { currentUser, requireUser } from "@jetframez/notio/auth";
+import { currentUser, requireUser } from "notio/auth";
 
 currentUser<User>();   // User | undefined, via ALS — works outside handlers too
 requireUser<User>();   // throws Unauthorized if there is none

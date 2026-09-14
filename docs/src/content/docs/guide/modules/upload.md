@@ -2,10 +2,10 @@
 title: Uploads
 ---
 
-`@jetframez/notio/upload` handles `multipart/form-data`: files stream to a temp directory (or stay in memory below a threshold), their type is detected from content rather than trusted from the client, and text fields validate through the ordinary `.body()` schema.
+`notio/upload` handles `multipart/form-data`: files stream to a temp directory (or stay in memory below a threshold), their type is detected from content rather than trusted from the client, and text fields validate through the ordinary `.body()` schema.
 
 ```ts
-import { uploads } from "@jetframez/notio/upload";
+import { uploads } from "notio/upload";
 
 app.use(uploads({ maxFileSize: "10mb", maxTotalSize: "50mb" }));
 

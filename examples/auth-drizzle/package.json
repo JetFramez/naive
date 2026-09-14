@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@jetframez/notio": "workspace:*",
+    "notio": "workspace:*",
     "better-sqlite3": "catalog:",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"

@@ -7,7 +7,7 @@ title: Logging and ambient context
 notio logs through pino, behind a small `Logger` interface: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `child(fields)`, `isLevelEnabled(level)` and a `level` property. Each method takes either a message or a fields object followed by a message, as pino does.
 
 ```ts
-import { log } from "@jetframez/notio";
+import { log } from "notio";
 
 log.info({ orderId }, "order placed");
 log.error({ err }, "payment failed");
@@ -42,7 +42,7 @@ The exported `log` is a proxy. Inside a request it is `ctx.log`; inside `runWith
 The request context is made ambient with `AsyncLocalStorage`, so code that has no `ctx` parameter can still reach it:
 
 ```ts
-import { currentCtx, requireCtx } from "@jetframez/notio";
+import { currentCtx, requireCtx } from "notio";
 
 export async function audit(action: string) {
   const ctx = currentCtx();          // Ctx | undefined
