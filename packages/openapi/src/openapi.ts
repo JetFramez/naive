@@ -1,4 +1,4 @@
-import type { RouteInfo } from "@notio-internal/core";
+import type { RouteInfo } from "@naive-internal/core";
 import type { RequestHandler } from "express";
 import { createDocsRouter } from "./docs.js";
 import { buildDocument, type OpenApiDocument, type OpenApiOptions } from "./document.js";
@@ -19,7 +19,7 @@ export interface OpenApiBuilder {
   from(...sources: readonly RouteSource[]): OpenApiSpec;
 }
 
-/** Builds an OpenAPI 3.1 document from notio's route metadata. No code generation. */
+/** Builds an OpenAPI 3.1 document from naive's route metadata. No code generation. */
 export function openapi(options: OpenApiOptions): OpenApiBuilder {
   return {
     from(...sources) {

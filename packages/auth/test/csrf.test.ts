@@ -1,4 +1,4 @@
-import { Router } from "@notio-internal/core";
+import { Router } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { csrf } from "../src/csrf.js";
 import { withApp } from "./helpers/http.js";

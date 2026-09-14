@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getAuthRequirement } from "../src/security-marker.js";
 
-const AUTH_REQUIREMENT: unique symbol = Symbol.for("notio.auth.requirement");
+const AUTH_REQUIREMENT: unique symbol = Symbol.for("naive.auth.requirement");
 
 function markedMiddleware(strategies: string[]) {
   const mw = async () => {};

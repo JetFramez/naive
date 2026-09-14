@@ -2,7 +2,7 @@
 title: Testing
 ---
 
-notio ships no test client — see [What notio does not do](../../about/scope/). Testing a notio app is testing an Express app: start it on an ephemeral port and make real requests. This is the same pattern the framework's own test suite uses.
+naive ships no test client — see [What naive does not do](../../about/scope/). Testing a naive app is testing an Express app: start it on an ephemeral port and make real requests. This is the same pattern the framework's own test suite uses.
 
 ## Starting and stopping the app
 
@@ -10,7 +10,7 @@ Bind to port `0` for an OS-assigned free port, and disable signal handling so `c
 
 ```ts
 import type { AddressInfo } from "node:net";
-import type { App } from "@jetframez/notio";
+import type { App } from "@jetframez/naive";
 
 async function startTestApp(app: App) {
   const server = await app.listen(0, "127.0.0.1");
@@ -24,7 +24,7 @@ async function startTestApp(app: App) {
 ```
 
 ```ts
-import { createApp, Router } from "@jetframez/notio";
+import { createApp, Router } from "@jetframez/naive";
 
 const app = createApp({ shutdown: { signals: false } });
 app.mount(orders);
@@ -46,7 +46,7 @@ Plain `fetch` is enough — no `supertest` dependency needed. Pass `{ redirect: 
 Pass a `destination` that collects lines in memory rather than writing them:
 
 ```ts
-import { createLogger } from "@jetframez/notio";
+import { createLogger } from "@jetframez/naive";
 
 function captureLogger() {
   const lines: Record<string, unknown>[] = [];

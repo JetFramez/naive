@@ -1,6 +1,6 @@
 # minimal
 
-The smallest useful notio app. One router, one validated body, one thrown error, wired through `createApp`.
+The smallest useful naive app. One router, one validated body, one thrown error, wired through `createApp`.
 
 ```sh
 pnpm --filter minimal start

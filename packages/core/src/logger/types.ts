@@ -5,7 +5,7 @@ export interface LogFn {
   (fields: object, message?: string, ...args: unknown[]): void;
 }
 
-/** The logging surface notio exposes. pino sits underneath. */
+/** The logging surface naive exposes. pino sits underneath. */
 export interface Logger {
   level: LogLevel;
   trace: LogFn;

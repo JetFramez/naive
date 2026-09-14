@@ -55,7 +55,7 @@ Signed cookies use HMAC-SHA256. Configure `createApp({ cookies: { secret } })`; 
 Add fields every request carries by merging into the interface:
 
 ```ts
-declare module "@jetframez/notio" {
+declare module "@jetframez/naive" {
   interface Ctx {
     tenant?: Tenant;
   }
@@ -66,4 +66,4 @@ For fields a specific middleware adds, prefer `Middleware<{ user: User }>`, whic
 
 ## Durations
 
-Wherever notio takes a time (`maxAge`, TTLs, windows, deadlines) it accepts milliseconds as a number or a duration string: `"250ms"`, `"5s"`, `"5m"`, `"1.5h"`, `"30d"`, `"2w"`. Full grammar and byte-size strings (`"10mb"`) are in the [reference](../../../reference/durations-and-sizes/).
+Wherever naive takes a time (`maxAge`, TTLs, windows, deadlines) it accepts milliseconds as a number or a duration string: `"250ms"`, `"5s"`, `"5m"`, `"1.5h"`, `"30d"`, `"2w"`. Full grammar and byte-size strings (`"10mb"`) are in the [reference](../../../reference/durations-and-sizes/).

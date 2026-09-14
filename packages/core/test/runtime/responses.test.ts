@@ -141,7 +141,7 @@ describe("plain return conventions", () => {
 });
 
 describe("descriptors", () => {
-  const dir = mkdtempSync(join(tmpdir(), "notio-"));
+  const dir = mkdtempSync(join(tmpdir(), "naive-"));
   writeFileSync(join(dir, "hello.txt"), "file contents");
 
   it("json/text/redirect/empty/raw/stream", async () => {

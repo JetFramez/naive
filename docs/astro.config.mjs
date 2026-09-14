@@ -4,17 +4,17 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   site: "https://jetframez.github.io",
-  base: "/notio",
+  base: "/naive",
   integrations: [
     starlight({
-      title: "notio",
+      title: "naive",
       description:
         "A TypeScript web framework on Express 5: a typed router, per-request context, unified errors, hooks, logging, config, and optional modules for auth, uploads, rate limiting, and OpenAPI.",
       logo: { src: "./src/assets/logo.svg" },
       favicon: "/favicon.svg",
-      social: [{ icon: "github", label: "GitHub", href: "https://github.com/jetframez/notio" }],
+      social: [{ icon: "github", label: "GitHub", href: "https://github.com/jetframez/naive" }],
       editLink: {
-        baseUrl: "https://github.com/jetframez/notio/edit/main/docs/src/content/docs/",
+        baseUrl: "https://github.com/jetframez/naive/edit/main/docs/src/content/docs/",
       },
       customCss: ["./src/styles/custom.css"],
       sidebar: [
@@ -67,7 +67,7 @@ export default defineConfig({
           label: "About",
           items: [
             { label: "Design principles", slug: "guide/about/principles" },
-            { label: "What notio does not do", slug: "guide/about/scope" },
+            { label: "What naive does not do", slug: "guide/about/scope" },
           ],
         },
         {

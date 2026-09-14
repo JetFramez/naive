@@ -1,4 +1,4 @@
-import { type Ctx, currentCtx, Unauthorized } from "@notio-internal/core";
+import { type Ctx, currentCtx, Unauthorized } from "@naive-internal/core";
 
 /** The authenticated user for the current request, via ALS. `undefined` outside a request or if unauthenticated. */
 export function currentUser<User = unknown>(): User | undefined {

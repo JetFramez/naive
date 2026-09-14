@@ -7,8 +7,8 @@ export type {
   UploadMessage,
   UploadMessages,
   UploadsOf,
-} from "@notio-internal/core";
-export { UPLOAD_ISSUE_CODES } from "@notio-internal/core";
+} from "@naive-internal/core";
+export { UPLOAD_ISSUE_CODES } from "@naive-internal/core";
 export { UploadedFileImpl } from "./file.js";
 export { resolveMessage } from "./messages.js";
 export { createParser, type ResolvedUploadOptions } from "./parse.js";

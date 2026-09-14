@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import type { StandardSchemaV1 } from "@notio-internal/core";
+import type { StandardSchemaV1 } from "@naive-internal/core";
 import type { JsonSchema } from "./json-schema.js";
 
 type Converter = (schema: StandardSchemaV1) => JsonSchema;

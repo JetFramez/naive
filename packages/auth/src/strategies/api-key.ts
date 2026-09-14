@@ -1,4 +1,4 @@
-import type { MaybePromise } from "@notio-internal/core";
+import type { MaybePromise } from "@naive-internal/core";
 import { absent, authenticated, type HasId, invalid, type Strategy } from "./types.js";
 
 export interface ApiKeyOptions<User> {
@@ -12,7 +12,7 @@ export interface ApiKeyOptions<User> {
 
 /**
  * Auth on a caller-supplied key, verified by your own lookup (a database of
- * API keys, a third-party check, anything). notio does not store or hash
+ * API keys, a third-party check, anything). naive does not store or hash
  * anything for this strategy; `verify` owns that entirely.
  */
 export function apiKey<User extends HasId>(options: ApiKeyOptions<User>): Strategy<User, "apiKey"> {

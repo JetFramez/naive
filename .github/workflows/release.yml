@@ -50,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Runs on the push right after a "Version Packages" PR merges: no
-      # changesets are pending anymore, and packages/notio/package.json
+      # changesets are pending anymore, and packages/naive/package.json
       # carries a version not yet on the registry. Stages it — NOT public
       # yet. A maintainer must run, locally:
       #   npm stage list                     (find the staged id)
@@ -58,10 +58,10 @@ jobs:
       # before the release is actually live. See README.md#releasing.
       - name: Stage the release
         if: steps.changesets.outputs.hasChangesets == 'false'
-        working-directory: packages/notio
+        working-directory: packages/naive
         run: |
           current=$(node -p "require('./package.json').version")
-          published=$(npm view @jetframez/notio version 2>/dev/null || echo "none")
+          published=$(npm view @jetframez/naive version 2>/dev/null || echo "none")
           if [ "$current" = "$published" ]; then
             echo "package.json version $current is already on the registry; nothing to stage"
           else

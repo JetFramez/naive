@@ -1,4 +1,4 @@
-import { Forbidden, type Middleware } from "@notio-internal/core";
+import { Forbidden, type Middleware } from "@naive-internal/core";
 import { randomToken } from "./tokens.js";
 
 export interface CsrfOptions {

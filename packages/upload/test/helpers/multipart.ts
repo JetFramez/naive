@@ -34,7 +34,7 @@ export function buildMultipart(parts: readonly MultipartPart[]): {
   body: Buffer;
   contentType: string;
 } {
-  const boundary = `notioTestBoundary${Math.random().toString(16).slice(2)}`;
+  const boundary = `naiveTestBoundary${Math.random().toString(16).slice(2)}`;
   const chunks: Buffer[] = [];
   for (const part of parts) {
     chunks.push(Buffer.from(`--${boundary}\r\n`));

@@ -5,7 +5,7 @@ title: Cache
 A small cache API on Keyv. Memory by default; Redis through the optional `@keyv/redis` package.
 
 ```ts
-import { createCache, redisStore } from "@jetframez/notio";
+import { createCache, redisStore } from "@jetframez/naive";
 
 export const cache = createCache({ prefix: "shop", ttl: "5m", app });
 // or: createCache({ store: await redisStore(config.redis.url), prefix: "shop" })

@@ -1,4 +1,4 @@
-import { Router } from "@notio-internal/core";
+import { Router } from "@naive-internal/core";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { openapi } from "../src/openapi.js";

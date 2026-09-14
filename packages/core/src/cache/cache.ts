@@ -4,7 +4,7 @@ import { parseDuration } from "../util/duration.js";
 export interface CacheOptions {
   /** A Keyv store adapter. Defaults to an in-memory Map. */
   store?: KeyvStoreAdapter | undefined;
-  /** Key prefix (Keyv namespace). Default `"notio"`. */
+  /** Key prefix (Keyv namespace). Default `"naive"`. */
   prefix?: string | undefined;
   /** Default TTL for `set` when none is given. Milliseconds or a duration string. */
   ttl?: number | string | undefined;
@@ -56,7 +56,7 @@ function ttlMs(ttl: number | string | undefined, fallback: number | undefined): 
 export function createCache(options: CacheOptions = {}): Cache {
   const keyv = new Keyv({
     ...(options.store ? { store: options.store } : {}),
-    namespace: options.prefix ?? "notio",
+    namespace: options.prefix ?? "naive",
   });
   const defaultTtl = ttlMs(options.ttl, undefined);
   const inFlight = new Map<string, Promise<unknown>>();

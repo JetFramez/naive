@@ -74,7 +74,7 @@ See [Errors: classification](../../core/errors/#classification).
 Augment `Ctx` with a `tenant` field, set it in middleware, and read it anywhere — including deep inside a service that has no `ctx` parameter — via `currentCtx()`.
 
 ```ts
-declare module "@jetframez/notio" {
+declare module "@jetframez/naive" {
   interface Ctx {
     tenant?: { id: string };
   }
@@ -100,7 +100,7 @@ See [Context: augmenting `Ctx`](../../core/ctx/#augmenting-ctx) and [Logging: am
 ```ts
 // scripts/export-openapi.ts
 import { writeFileSync } from "node:fs";
-import { openapi } from "@jetframez/notio/openapi";
+import { openapi } from "@jetframez/naive/openapi";
 import { app } from "../src/app.js"; // however you build and mount routers
 
 const spec = openapi({ info: { title: "Shop API", version: "1.0.0" } }).from(app);

@@ -4,12 +4,12 @@ title: Rate limiting
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
+`@jetframez/naive/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
 
 <Tabs>
 <TabItem label="memory — one process">
 ```ts
-import { rateLimit } from "@jetframez/notio/rate-limit";
+import { rateLimit } from "@jetframez/naive/rate-limit";
 
 router.use(rateLimit({ limit: 100, window: "1m" }));
 
@@ -18,7 +18,7 @@ router.post("/login").use(rateLimit({ limit: 5, window: "15m", key: (ctx) => ctx
 </TabItem>
 <TabItem label="Redis — several processes">
 ```ts
-import { rateLimit } from "@jetframez/notio/rate-limit";
+import { rateLimit } from "@jetframez/naive/rate-limit";
 import Redis from "ioredis";
 
 const redis = new Redis(config.redis.url);
@@ -42,7 +42,7 @@ Every response the limiter sees carries `RateLimit-Limit`, `RateLimit-Remaining`
 | `cost` | `1` | Points this request consumes; a number or `(ctx) => number`. |
 | `algorithm` | `"fixed"` | `"fixed"`, `"sliding"`, or `"token-bucket"`. |
 | `store` | memory | A Redis client (`ioredis`, or anything with an ioredis-style `eval`). |
-| `name` | `"notio-rate-limit"` | Namespaces this limiter's keys, so several `rateLimit()` calls can share one client. |
+| `name` | `"naive-rate-limit"` | Namespaces this limiter's keys, so several `rateLimit()` calls can share one client. |
 | `fallback` | `true` | With a Redis store: if Redis errors, decide from an in-process copy for that request instead of failing it. `false` fails closed. |
 | `onLimited` | — | `(ctx, { limit, window, retryAfter, key }) => void`, called exactly when a request is rejected. |
 

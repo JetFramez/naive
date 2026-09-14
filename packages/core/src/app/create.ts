@@ -70,7 +70,7 @@ function isLogger(value: unknown): value is Logger {
  * in the right order at `listen()`.
  */
 export class App {
-  /** The raw Express instance. Registering on it directly bypasses notio's ordering. */
+  /** The raw Express instance. Registering on it directly bypasses naive's ordering. */
   readonly express: Express;
   readonly logger: Logger;
   /** The HTTP server, once listening. */
@@ -101,7 +101,7 @@ export class App {
     setRootLogger(this.logger);
   }
 
-  /** App-level middleware: Express `(req, res, next)` or notio `(ctx, next)`, any mix. */
+  /** App-level middleware: Express `(req, res, next)` or naive `(ctx, next)`, any mix. */
   use(...middleware: readonly CtxMiddlewareFor<Ctx>[]): this;
   use(...middleware: readonly express.RequestHandler[]): this;
   use(...middleware: readonly express.ErrorRequestHandler[]): this;

@@ -11,7 +11,7 @@ export function setRootFactory(fn: () => Logger): void {
 /** The process-wide root logger, created lazily with defaults on first use. */
 export function getRootLogger(): Logger {
   if (!root) {
-    if (!factory) throw new Error("notio: no logger factory registered");
+    if (!factory) throw new Error("naive: no logger factory registered");
     root = factory();
   }
   return root;

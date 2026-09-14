@@ -21,7 +21,7 @@ export interface CompileOptions {
 }
 
 /** Marks an error whose router-level `onError` hooks already ran. */
-export const ROUTER_HANDLED: unique symbol = Symbol.for("notio.error.routerHandled");
+export const ROUTER_HANDLED: unique symbol = Symbol.for("naive.error.routerHandled");
 
 export function markHandled(error: unknown): void {
   if (typeof error === "object" && error !== null) {

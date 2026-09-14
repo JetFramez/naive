@@ -1,4 +1,4 @@
-import type { StandardIssue, StandardResult, StandardSchemaV1 } from "@notio-internal/core";
+import type { StandardIssue, StandardResult, StandardSchemaV1 } from "@naive-internal/core";
 
 /** A minimal Standard Schema for an unrecognised vendor, to test the fallback error and custom converters. */
 export function fakeSchema(vendor: string, value: unknown = {}): StandardSchemaV1 {

@@ -1,4 +1,4 @@
-import { parseDuration } from "@notio-internal/core";
+import { parseDuration } from "@naive-internal/core";
 import { hashToken, rollSession } from "../tokens.js";
 import { absent, authenticated, type HasId, invalid, type Strategy } from "./types.js";
 

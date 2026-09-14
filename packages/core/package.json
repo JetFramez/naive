@@ -1,8 +1,8 @@
 {
-  "name": "@notio-internal/core",
+  "name": "@naive-internal/core",
   "version": "0.0.0",
   "private": true,
-  "description": "notio core: router, ctx, errors, hooks, ALS, logger, config, cookies, static, events, cache",
+  "description": "naive core: router, ctx, errors, hooks, ALS, logger, config, cookies, static, events, cache",
   "type": "module",
   "sideEffects": false,
   "exports": {

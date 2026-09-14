@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    name: "notio",
+    name: "naive",
     include: ["test/**/*.test.ts"],
   },
   resolve: {

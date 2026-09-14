@@ -17,7 +17,7 @@ Set `expose` and `pretty` explicitly if you want different behavior than the def
 
 ## Trust proxy
 
-`ctx.ip` and cookie `secure` detection honor Express's `trust proxy` setting, but notio does not set it for you. Behind a reverse proxy or load balancer, set it on the underlying Express instance:
+`ctx.ip` and cookie `secure` detection honor Express's `trust proxy` setting, but naive does not set it for you. Behind a reverse proxy or load balancer, set it on the underlying Express instance:
 
 ```ts
 app.express.set("trust proxy", 1); // or a specific list of trusted IPs/CIDRs

@@ -1,19 +1,19 @@
 ---
-title: What notio does not do
+title: What naive does not do
 ---
 
 A short, explicit list, so you don't go looking for something that isn't here on purpose.
 
 ## Not in the auth module
 
-`@jetframez/notio/auth` covers strategies, sessions, JWTs, opaque tokens with rotation, and password hashing — nothing else. Specifically absent:
+`@jetframez/naive/auth` covers strategies, sessions, JWTs, opaque tokens with rotation, and password hashing — nothing else. Specifically absent:
 
 - **OAuth** and social login.
 - **Magic links.**
 - **Two-factor authentication.**
 - **Email verification.**
 - **Password reset flows.**
-- **An authorization model.** notio has no concept of roles or permissions. Build access control on top of `currentUser()` / `requireUser()` and your own logic — `guard()` in [Middleware](../../core/middleware/#ctx-middleware-and-narrowing) is the usual shape for it.
+- **An authorization model.** naive has no concept of roles or permissions. Build access control on top of `currentUser()` / `requireUser()` and your own logic — `guard()` in [Middleware](../../core/middleware/#ctx-middleware-and-narrowing) is the usual shape for it.
 
 ## Not anywhere in the framework
 

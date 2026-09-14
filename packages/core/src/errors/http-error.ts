@@ -1,7 +1,7 @@
 import { STATUS_CODES } from "node:http";
 
 /**
- * Base class for every error notio sends to a client. The wire shape is always
+ * Base class for every error naive sends to a client. The wire shape is always
  * `{ code, message, details?, requestId }`.
  */
 export class HttpError extends Error {

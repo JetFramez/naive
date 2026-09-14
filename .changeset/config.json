@@ -8,10 +8,10 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@notio-internal/core",
-    "@notio-internal/auth",
-    "@notio-internal/upload",
-    "@notio-internal/rate-limit",
-    "@notio-internal/openapi"
+    "@naive-internal/core",
+    "@naive-internal/auth",
+    "@naive-internal/upload",
+    "@naive-internal/rate-limit",
+    "@naive-internal/openapi"
   ]
 }

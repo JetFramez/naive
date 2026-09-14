@@ -2,11 +2,11 @@
 title: Error codes
 ---
 
-Every error notio's error handler renders carries a `status` and a `code` in the unified envelope — see [Errors](../../guide/core/errors/). This page lists every code notio itself can produce, across the core and every module. A code your own application throws (via `defineError` or `map`) is not listed here; it is whatever you named it.
+Every error naive's error handler renders carries a `status` and a `code` in the unified envelope — see [Errors](../../guide/core/errors/). This page lists every code naive itself can produce, across the core and every module. A code your own application throws (via `defineError` or `map`) is not listed here; it is whatever you named it.
 
 ## From the `HttpError` family
 
-Thrown directly by your code, or by notio internals using the same classes.
+Thrown directly by your code, or by naive internals using the same classes.
 
 | Code | Status | Thrown by |
 |---|---|---|
@@ -42,7 +42,7 @@ See [Uploads](../../guide/modules/upload/#issues) for the full shape and for cus
 
 ## Schema validation issues
 
-For `.params()`, `.query()`, `.headers()` and `.body()`, the `VALIDATION` envelope's `details.issues` array is produced by the schema library itself (Zod, Valibot, ArkType) via its Standard Schema `issues` output — notio does not define its own vocabulary of validation issue codes here. `details.in` names which section failed: `"params"`, `"query"`, `"headers"`, or `"body"`.
+For `.params()`, `.query()`, `.headers()` and `.body()`, the `VALIDATION` envelope's `details.issues` array is produced by the schema library itself (Zod, Valibot, ArkType) via its Standard Schema `issues` output — naive does not define its own vocabulary of validation issue codes here. `details.in` names which section failed: `"params"`, `"query"`, `"headers"`, or `"body"`.
 
 ## Not wire errors
 

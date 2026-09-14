@@ -1,4 +1,4 @@
-import { log } from "@notio-internal/core";
+import { log } from "@naive-internal/core";
 import { fixedMemory, fixedRedis } from "./algorithms/fixed.js";
 import { slidingMemory, slidingRedis } from "./algorithms/sliding.js";
 import { tokenBucketMemory, tokenBucketRedis } from "./algorithms/token-bucket.js";

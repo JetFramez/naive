@@ -1,6 +1,6 @@
 import { readdir, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
-import type { Logger } from "@notio-internal/core";
+import type { Logger } from "@naive-internal/core";
 
 /** Removes subdirectories of `tempDir` whose modification time is older than `maxAgeMs`. Best-effort. */
 export async function sweepTempDir(

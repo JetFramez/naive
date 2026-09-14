@@ -1,4 +1,4 @@
-import type { UploadFieldsSpec } from "@notio-internal/core";
+import type { UploadFieldsSpec } from "@naive-internal/core";
 import type { JsonSchema } from "./schema/json-schema.js";
 
 /**

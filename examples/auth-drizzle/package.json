@@ -2,14 +2,14 @@
   "name": "auth-drizzle",
   "private": true,
   "type": "module",
-  "description": "notio's auth module wired to a real database via Drizzle ORM (SQLite).",
+  "description": "naive's auth module wired to a real database via Drizzle ORM (SQLite).",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@jetframez/notio": "workspace:*",
+    "@jetframez/naive": "workspace:*",
     "better-sqlite3": "catalog:",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"

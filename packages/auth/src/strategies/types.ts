@@ -1,4 +1,4 @@
-import type { Ctx } from "@notio-internal/core";
+import type { Ctx } from "@naive-internal/core";
 import type { AdapterMethod, AuthAdapter } from "../adapter.js";
 import type { PasswordHasher } from "../hash/types.js";
 

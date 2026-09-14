@@ -13,7 +13,7 @@ import {
   type UploadMessages,
   type ValidationIssue,
   validationError,
-} from "@notio-internal/core";
+} from "@naive-internal/core";
 import busboy from "busboy";
 import { UploadedFileImpl } from "./file.js";
 import { resolveMessage } from "./messages.js";

@@ -1,8 +1,8 @@
 {
-  "name": "@notio-internal/upload",
+  "name": "@naive-internal/upload",
   "version": "0.0.0",
   "private": true,
-  "description": "notio uploads: multipart parsing on busboy, magic-byte type detection, temp file lifecycle",
+  "description": "naive uploads: multipart parsing on busboy, magic-byte type detection, temp file lifecycle",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -24,7 +24,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@notio-internal/core": "workspace:*",
+    "@naive-internal/core": "workspace:*",
     "busboy": "catalog:",
     "express": "catalog:",
     "file-type": "catalog:"

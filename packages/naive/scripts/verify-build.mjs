@@ -12,7 +12,7 @@ const files = (await readdir(distDir)).filter((f) => f.endsWith(".js"));
 let leaked = false;
 for (const file of files) {
   const contents = await readFile(join(distDir, file), "utf8");
-  const importLine = /(?:from|require\()\s*["']@notio-internal\//;
+  const importLine = /(?:from|require\()\s*["']@naive-internal\//;
   if (importLine.test(contents)) {
     console.error(`✗ ${file} still imports a workspace package instead of inlining it`);
     leaked = true;

@@ -9,7 +9,7 @@ This walks through the `minimal` example in the repository, one piece at a time.
 A `Router` groups routes under a prefix. Nothing runs until you mount it on an app.
 
 ```ts
-import { Router } from "@jetframez/notio";
+import { Router } from "@jetframez/naive";
 
 const orders = new Router("/orders");
 ```
@@ -38,7 +38,7 @@ Nothing here mentions the response. Returning a plain value is enough; the route
 Throw. Never call `next(err)`.
 
 ```ts
-import { NotFound } from "@jetframez/notio";
+import { NotFound } from "@jetframez/naive";
 
 orders.get("/:id").handle((ctx) => {
   const order = findOrder(ctx.params.id); //   ctx.params.id: string, inferred from ":id"
@@ -47,7 +47,7 @@ orders.get("/:id").handle((ctx) => {
 });
 ```
 
-Every error notio's handler renders comes out the same shape:
+Every error naive's handler renders comes out the same shape:
 
 ```json
 { "code": "NOT_FOUND", "message": "Order 42 does not exist", "details": { "id": "42" }, "requestId": "…" }
@@ -58,7 +58,7 @@ Every error notio's handler renders comes out the same shape:
 `createApp` builds a real Express application with body parsing, a request context, and an error handler already registered in the right order. `app.mount()` attaches a router at its own prefix.
 
 ```ts
-import { createApp } from "@jetframez/notio";
+import { createApp } from "@jetframez/naive";
 
 const app = createApp();
 app.mount(orders);
@@ -94,4 +94,4 @@ curl -X POST http://localhost:3000/orders \
 
 - [How a request flows](../request-flow/) walks through what `createApp` and the router actually do, in order, for every request.
 - [Router](../../core/router/) covers path params, schemas, and typed narrowing in full.
-- [Using notio in an existing Express app](../existing-express/) if you are adding this to something that already exists.
+- [Using naive in an existing Express app](../existing-express/) if you are adding this to something that already exists.
