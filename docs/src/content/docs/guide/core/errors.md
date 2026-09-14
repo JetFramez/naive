@@ -13,7 +13,7 @@ Throw errors; never call `next(err)`. The router forwards anything thrown by mid
 ## The HttpError family
 
 ```ts
-import { NotFound, Conflict, HttpError, defineError } from "notio";
+import { NotFound, Conflict, HttpError, defineError } from "@jetframez/notio";
 
 throw new NotFound();                                   // 404 NOT_FOUND "Not Found"
 throw new NotFound("Order 42 does not exist", { id: 42 });

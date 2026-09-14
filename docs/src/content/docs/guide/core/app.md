@@ -5,7 +5,7 @@ title: createApp
 `createApp` builds a real Express application with notio's pieces wired in the right order: context, body parsing, health routes, your routes, then error handling. This page covers what it wires, in what order, and its lifecycle hooks.
 
 ```ts
-import { createApp } from "notio";
+import { createApp } from "@jetframez/notio";
 import { orders } from "./orders.js";
 
 const app = createApp({

@@ -17,7 +17,7 @@ export type CtxKind = "http" | "job" | "cli" | (string & {});
 
 /**
  * The subset of the context that exists outside HTTP (jobs, CLI). Augment it
- * with `declare module "notio" { interface BaseCtx { ... } }`.
+ * with `declare module "@jetframez/notio" { interface BaseCtx { ... } }`.
  */
 export interface BaseCtx {
   readonly requestId: string;
@@ -74,7 +74,7 @@ export interface CtxCookies {
  * middleware and helper can accept; routes see {@link TypedCtx} with params,
  * query, body and headers narrowed by the path and schemas.
  *
- * Augment globally with `declare module "notio" { interface Ctx { user?: User } }`.
+ * Augment globally with `declare module "@jetframez/notio" { interface Ctx { user?: User } }`.
  */
 export interface Ctx extends BaseCtx {
   readonly kind: "http";

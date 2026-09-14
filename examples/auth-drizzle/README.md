@@ -1,6 +1,6 @@
 # auth-drizzle
 
-`notio/auth` wired to a real database: a Drizzle ORM `AuthAdapter` on SQLite, cookie sessions, and password hashing.
+`@jetframez/notio/auth` wired to a real database: a Drizzle ORM `AuthAdapter` on SQLite, cookie sessions, and password hashing.
 
 ```sh
 pnpm --filter auth-drizzle start

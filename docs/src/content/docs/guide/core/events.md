@@ -5,7 +5,7 @@ title: Events
 An in-process, typed event bus. Listeners run under the emitter's request context, so `log` and `currentCtx()` inside a listener still refer to the request that emitted.
 
 ```ts
-import { createEvents } from "notio";
+import { createEvents } from "@jetframez/notio";
 
 export type Events = {
   "order.placed": { orderId: string };

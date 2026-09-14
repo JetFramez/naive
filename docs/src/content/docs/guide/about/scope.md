@@ -6,7 +6,7 @@ A short, explicit list, so you don't go looking for something that isn't here on
 
 ## Not in the auth module
 
-`notio/auth` covers strategies, sessions, JWTs, opaque tokens with rotation, and password hashing — nothing else. Specifically absent:
+`@jetframez/notio/auth` covers strategies, sessions, JWTs, opaque tokens with rotation, and password hashing — nothing else. Specifically absent:
 
 - **OAuth** and social login.
 - **Magic links.**

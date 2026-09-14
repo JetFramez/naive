@@ -17,22 +17,22 @@ notio is one package. Optional modules ship as subpaths of it, not separate pack
 <Tabs syncKey="package-manager">
 <TabItem label="pnpm">
 ```sh
-pnpm add notio zod
+pnpm add @jetframez/notio zod
 ```
 </TabItem>
 <TabItem label="npm">
 ```sh
-npm install notio zod
+npm install @jetframez/notio zod
 ```
 </TabItem>
 <TabItem label="yarn">
 ```sh
-yarn add notio zod
+yarn add @jetframez/notio zod
 ```
 </TabItem>
 </Tabs>
 
-Express itself ships inside `notio` — there is nothing else to install for the core. Zod is one option among three; swap it for `valibot` or `arktype` and nothing else in this guide changes.
+Express itself ships inside `@jetframez/notio` — there is nothing else to install for the core. Zod is one option among three; swap it for `valibot` or `arktype` and nothing else in this guide changes.
 
 ## Subpaths
 
@@ -40,11 +40,11 @@ Each optional module is a subpath import. Nothing is registered unless you impor
 
 | Import | What it adds |
 |---|---|
-| `notio` | `createApp`, `Router`, `Ctx`, errors, hooks, logging, config, events, cache |
-| `notio/auth` | sessions, JWTs, opaque tokens, password hashing |
-| `notio/upload` | multipart file uploads |
-| `notio/rate-limit` | request rate limiting |
-| `notio/openapi` | OpenAPI 3.1 generation and a docs UI |
+| `@jetframez/notio` | `createApp`, `Router`, `Ctx`, errors, hooks, logging, config, events, cache |
+| `@jetframez/notio/auth` | sessions, JWTs, opaque tokens, password hashing |
+| `@jetframez/notio/upload` | multipart file uploads |
+| `@jetframez/notio/rate-limit` | request rate limiting |
+| `@jetframez/notio/openapi` | OpenAPI 3.1 generation and a docs UI |
 
 ## Optional peer packages
 

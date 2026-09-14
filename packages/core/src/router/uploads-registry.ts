@@ -32,4 +32,4 @@ export function getUploadsParser(): UploadsParser | undefined {
 
 export const UPLOAD_MODULE_INSTALL_MESSAGE =
   "declares .uploads() but the upload module is not installed. Install it and register it: " +
-  'import { uploads } from "notio/upload"; app.use(uploads());';
+  'import { uploads } from "@jetframez/notio/upload"; app.use(uploads());';

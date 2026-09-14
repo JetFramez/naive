@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { createApp, Router } from "notio";
-import { cookieSession, createAuth } from "notio/auth";
+import { createApp, Router } from "@jetframez/notio";
+import { cookieSession, createAuth } from "@jetframez/notio/auth";
 import { z } from "zod";
 import { createDrizzleAdapter, type User } from "./adapter.js";
 import { createDb } from "./db.js";
