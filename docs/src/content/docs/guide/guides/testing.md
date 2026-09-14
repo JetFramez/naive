@@ -10,7 +10,7 @@ Bind to port `0` for an OS-assigned free port, and disable signal handling so `c
 
 ```ts
 import type { AddressInfo } from "node:net";
-import type { App } from "@jetframez/notio";
+import type { App } from "notio";
 
 async function startTestApp(app: App) {
   const server = await app.listen(0, "127.0.0.1");
@@ -24,7 +24,7 @@ async function startTestApp(app: App) {
 ```
 
 ```ts
-import { createApp, Router } from "@jetframez/notio";
+import { createApp, Router } from "notio";
 
 const app = createApp({ shutdown: { signals: false } });
 app.mount(orders);
@@ -46,7 +46,7 @@ Plain `fetch` is enough — no `supertest` dependency needed. Pass `{ redirect: 
 Pass a `destination` that collects lines in memory rather than writing them:
 
 ```ts
-import { createLogger } from "@jetframez/notio";
+import { createLogger } from "notio";
 
 function captureLogger() {
   const lines: Record<string, unknown>[] = [];
