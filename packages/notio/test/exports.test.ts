@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-describe("notio", () => {
+describe("@jetframez/notio", () => {
   it("re-exports the framework core", async () => {
     const core = await import("../src/index.js");
     expect(typeof core.createApp).toBe("function");

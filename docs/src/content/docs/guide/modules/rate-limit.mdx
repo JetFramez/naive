@@ -4,12 +4,12 @@ title: Rate limiting
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-`notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
+`@jetframez/notio/rate-limit` limits requests by a key. In one process it runs in memory; scaled out across processes or machines, hand it your Redis client instead and every decision becomes one atomic Lua script on the server.
 
 <Tabs>
 <TabItem label="memory — one process">
 ```ts
-import { rateLimit } from "notio/rate-limit";
+import { rateLimit } from "@jetframez/notio/rate-limit";
 
 router.use(rateLimit({ limit: 100, window: "1m" }));
 
@@ -18,7 +18,7 @@ router.post("/login").use(rateLimit({ limit: 5, window: "15m", key: (ctx) => ctx
 </TabItem>
 <TabItem label="Redis — several processes">
 ```ts
-import { rateLimit } from "notio/rate-limit";
+import { rateLimit } from "@jetframez/notio/rate-limit";
 import Redis from "ioredis";
 
 const redis = new Redis(config.redis.url);

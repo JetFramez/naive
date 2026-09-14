@@ -7,7 +7,7 @@ Full documentation: **<https://jetframez.github.io/notio/>**
 ## Install
 
 ```sh
-pnpm add notio zod
+pnpm add @jetframez/notio zod
 ```
 
 Node 22 or later, ESM. Express ships inside the package. Zod is one choice of schema library — Valibot and ArkType work the same way through [Standard Schema](https://standardschema.dev), and notio depends on none of them.
@@ -15,7 +15,7 @@ Node 22 or later, ESM. Express ships inside the package. Zod is one choice of sc
 ## A first route
 
 ```ts
-import { createApp, NotFound, Router } from "notio";
+import { createApp, NotFound, Router } from "@jetframez/notio";
 import { z } from "zod";
 
 const orders = new Router("/orders");
@@ -48,10 +48,10 @@ Each lives at its own subpath and does nothing until you import and call it:
 
 | Import | Adds |
 |---|---|
-| `notio/auth` | sessions, JWTs, opaque tokens with rotation, password hashing |
-| `notio/upload` | multipart file uploads with content-sniffed type detection |
-| `notio/rate-limit` | fixed window, sliding window, token bucket — memory or Redis |
-| `notio/openapi` | OpenAPI 3.1 generation with a Scalar docs UI |
+| `@jetframez/notio/auth` | sessions, JWTs, opaque tokens with rotation, password hashing |
+| `@jetframez/notio/upload` | multipart file uploads with content-sniffed type detection |
+| `@jetframez/notio/rate-limit` | fixed window, sliding window, token bucket — memory or Redis |
+| `@jetframez/notio/openapi` | OpenAPI 3.1 generation with a Scalar docs UI |
 
 ## License
 

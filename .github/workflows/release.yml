@@ -61,7 +61,7 @@ jobs:
         working-directory: packages/notio
         run: |
           current=$(node -p "require('./package.json').version")
-          published=$(npm view notio version 2>/dev/null || echo "none")
+          published=$(npm view @jetframez/notio version 2>/dev/null || echo "none")
           if [ "$current" = "$published" ]; then
             echo "package.json version $current is already on the registry; nothing to stage"
           else

@@ -1,4 +1,4 @@
-import { createApp, NotFound, Router } from "notio";
+import { createApp, NotFound, Router } from "@jetframez/notio";
 import { z } from "zod";
 
 interface Order {

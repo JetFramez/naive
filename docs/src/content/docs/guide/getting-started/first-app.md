@@ -9,7 +9,7 @@ This walks through the `minimal` example in the repository, one piece at a time.
 A `Router` groups routes under a prefix. Nothing runs until you mount it on an app.
 
 ```ts
-import { Router } from "notio";
+import { Router } from "@jetframez/notio";
 
 const orders = new Router("/orders");
 ```
@@ -38,7 +38,7 @@ Nothing here mentions the response. Returning a plain value is enough; the route
 Throw. Never call `next(err)`.
 
 ```ts
-import { NotFound } from "notio";
+import { NotFound } from "@jetframez/notio";
 
 orders.get("/:id").handle((ctx) => {
   const order = findOrder(ctx.params.id); //   ctx.params.id: string, inferred from ":id"
@@ -58,7 +58,7 @@ Every error notio's handler renders comes out the same shape:
 `createApp` builds a real Express application with body parsing, a request context, and an error handler already registered in the right order. `app.mount()` attaches a router at its own prefix.
 
 ```ts
-import { createApp } from "notio";
+import { createApp } from "@jetframez/notio";
 
 const app = createApp();
 app.mount(orders);

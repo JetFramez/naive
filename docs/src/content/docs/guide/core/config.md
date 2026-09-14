@@ -5,7 +5,7 @@ title: Config
 `defineConfig` resolves configuration once at boot, validates every value, reports all problems together, and returns a frozen, typed object.
 
 ```ts
-import { defineConfig, env } from "notio";
+import { defineConfig, env } from "@jetframez/notio";
 import { z } from "zod";
 
 export const config = defineConfig({

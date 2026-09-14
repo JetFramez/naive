@@ -1,5 +1,5 @@
+import type { AuthAdapter } from "@jetframez/notio/auth";
 import { eq } from "drizzle-orm";
-import type { AuthAdapter } from "notio/auth";
 import type { AppDatabase } from "./db.js";
 import { sessions, users } from "./schema.js";
 
