@@ -22,6 +22,7 @@
     "url": "https://github.com/JetFramez/notio/issues"
   },
   "publishConfig": {
+    "access": "public",
     "provenance": true
   },
   "exports": {
